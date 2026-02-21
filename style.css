@@ -40,7 +40,19 @@ header {
     padding: 25px 40px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 20px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
 }
 
 .logo {
@@ -69,8 +81,87 @@ header h1 {
     text-align: left;
 }
 
+/* Login Form */
+.login-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#username-input {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 10px 15px;
+    font-size: 1rem;
+    color: var(--text-color);
+    min-width: 200px;
+    transition: all 0.3s;
+}
+
+#username-input:focus {
+    outline: none;
+    background: white;
+    border-color: white;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+}
+
+#username-input::placeholder {
+    color: #95a5a6;
+}
+
+/* User Info */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.user-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.username-display {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: white;
+}
+
+.btn-logout {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 1rem;
+}
+
+.btn-logout:hover {
+    color: white;
+}
+
 main {
     padding: 30px;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
 }
 
 section {
@@ -135,6 +226,10 @@ button {
 .btn-primary {
     background: var(--primary-color);
     color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
 }
 
 .btn-primary:hover {
@@ -156,12 +251,36 @@ button {
 .btn-danger {
     background: var(--danger-color);
     color: white;
-    padding: 8px 16px;
-    font-size: 0.9rem;
+    padding: 10px 14px;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
 }
 
 .btn-danger:hover {
     background: #c0392b;
+}
+
+.btn-info {
+    background: #3498db;
+    color: white;
+    padding: 10px 14px;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-info:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
 }
 
 /* Section Header */
@@ -176,7 +295,106 @@ button {
     margin-bottom: 0;
 }
 
-/* Flavor Name Display */
+/* Preparation Section */
+.preparation-section {
+    background: var(--card-bg);
+    padding: 25px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    box-shadow: var(--shadow);
+}
+
+.preparation-content {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+}
+
+.flavor-name-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.flavor-name-container label {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-color);
+    margin-bottom: 8px;
+}
+
+#flavor-name-input {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    padding: 12px 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    transition: all 0.3s;
+}
+
+#flavor-name-input:focus {
+    outline: none;
+    background: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+#flavor-name-input::placeholder {
+    color: #95a5a6;
+    font-weight: 400;
+}
+
+.preparation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.flavor-label {
+    flex: 1;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flavor-label-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* Section Header with Flavor Badge */
+.section-header-with-flavor {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-header-with-flavor h2 {
+    margin-bottom: 0;
+}
+
+.flavor-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    white-space: nowrap;
+}
+
+/* Old flavor-name-display styles (not used anymore but kept for compatibility) */
 .flavor-name-display {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -194,30 +412,6 @@ button {
     font-size: 1.1rem;
     color: white;
     margin: 0;
-}
-
-#flavor-name-input {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.95);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 6px;
-    padding: 8px 15px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-color);
-    transition: all 0.3s;
-}
-
-#flavor-name-input:focus {
-    outline: none;
-    background: white;
-    border-color: white;
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
-}
-
-#flavor-name-input::placeholder {
-    color: #95a5a6;
-    font-weight: 400;
 }
 
 /* Ingredients List */
@@ -254,6 +448,12 @@ button {
     flex: 1;
     font-weight: 600;
     font-size: 1.1rem;
+}
+
+.ingredient-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .ingredient-weight {
@@ -416,6 +616,10 @@ button {
     box-shadow: var(--shadow);
 }
 
+.print-actions {
+    margin-top: 15px;
+}
+
 .label-container {
     margin-top: 20px;
     transition: all 0.3s ease;
@@ -559,6 +763,30 @@ footer {
         flex-direction: column;
         text-align: center;
         padding: 25px 20px;
+        gap: 20px;
+    }
+
+    .header-left {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .header-right {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .login-form {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    #username-input {
+        width: 100%;
+    }
+
+    .user-info {
+        justify-content: center;
     }
 
     header h1 {
@@ -579,9 +807,39 @@ footer {
         align-items: stretch;
     }
 
+    .preparation-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .preparation-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .flavor-label-text {
+        font-size: 1.2rem;
+    }
+
+    .section-header-with-flavor {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .flavor-badge {
+        align-self: stretch;
+        text-align: center;
+    }
+
     .ingredient-item {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .ingredient-actions {
+        width: 100%;
+        flex-direction: column;
     }
 
     .ingredient-weight {
@@ -607,6 +865,7 @@ footer {
     }
 
     header, 
+    .preparation-section,
     .add-ingredient-section, 
     .ingredients-list-section, 
     .results-section,
@@ -630,5 +889,131 @@ footer {
 
     .label-container {
         display: block !important;
+    }
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease;
+    overflow-y: auto;
+    padding: 20px 0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    margin: 20px auto;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    position: relative;
+    animation: slideDown 0.3s ease;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-close {
+    color: #999;
+    float: right;
+    font-size: 32px;
+    font-weight: bold;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.modal-close:hover,
+.modal-close:focus {
+    color: var(--danger-color);
+}
+
+.modal-content h2 {
+    color: var(--primary-color);
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid var(--primary-color);
+    font-size: 1.8em;
+}
+
+.modal-data-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+.modal-data-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.modal-data-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.modal-label {
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 1em;
+}
+
+.modal-value {
+    font-weight: bold;
+    color: var(--primary-color);
+    font-size: 1.1em;
+}
+
+/* Responsive modal */
+@media (max-width: 600px) {
+    .modal-content {
+        width: 95%;
+        margin: 20% auto;
+        padding: 20px;
+    }
+    
+    .modal-content h2 {
+        font-size: 1.5em;
+    }
+    
+    .modal-data-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
     }
 }

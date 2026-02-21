@@ -4,22 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fiori Celesti - Calcolatore Ricette Gelateria</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <img src="logo.jpg" alt="Logo Fiori Celesti" class="logo">
-            <div class="header-text">
-                <h1>Fiori Celesti</h1>
-                <p class="subtitle">Calcolatore Ricette Gelateria</p>
+            <div class="header-left">
+                <img src="imgs/logo.jpg" alt="Logo Fiori Celesti" class="logo">
+                <div class="header-text">
+                    <h1>Fiori Celesti</h1>
+                    <p class="subtitle">Calcolatore Ricette Gelateria</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <!-- Form di login -->
+                <div class="login-form" id="login-form">
+                    <input type="text" id="username-input" placeholder="Il tuo nome...">
+                    <button id="login-btn" class="btn-primary"><i class="fas fa-sign-in-alt"></i> Login</button>
+                </div>
+                <!-- Info utente loggato -->
+                <div class="user-info hidden" id="user-info">
+                    <img src="imgs/logged_user.png" alt="User" class="user-icon">
+                    <span class="username-display" id="username-display"></span>
+                    <button id="logout-btn" class="btn-logout" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
             </div>
         </header>
 
         <main>
+            <!-- Sezione Preparazione -->
+            <section class="preparation-section">
+                <h2>Preparazione</h2>
+                <div class="preparation-content" id="flavor-name-form">
+                    <div class="flavor-name-container">
+                        <label for="flavor-name-input"><strong>Nome gusto:</strong></label>
+                        <input type="text" id="flavor-name-input" placeholder="Inserisci nome gusto..." autofocus>
+                    </div>
+                    <button id="confirm-flavor-btn" class="btn-primary"><i class="fas fa-check"></i> Conferma</button>
+                </div>
+                <div class="preparation-header hidden" id="preparation-header">
+                    <div class="flavor-label">
+                        <span class="flavor-label-text" id="flavor-label-display">Gelato Artigianale</span>
+                    </div>
+                    <button id="clear-btn" class="btn-secondary" title="Nuova preparazione"><i class="fas fa-file"></i> Nuovo</button>
+                </div>
+            </section>
+
             <!-- Sezione Aggiunta Ingredienti -->
-            <section class="add-ingredient-section">
-                <h2>Aggiungi Ingrediente</h2>
+            <section class="add-ingredient-section hidden" id="add-ingredient-section">
+                <div class="section-header-with-flavor">
+                    <h2>Aggiungi ingrediente</h2>
+                    <span class="flavor-badge" id="flavor-badge-add"></span>
+                </div>
                 <div class="input-group">
                     <div class="form-row">
                         <div class="form-field">
@@ -29,23 +66,19 @@
                             </select>
                         </div>
                         <div class="form-field">
-                            <label for="weight-input">Peso (g)</label>
-                            <input type="number" id="weight-input" min="0" step="0.1" placeholder="es. 500">
+                            <label for="weight-input">Peso (grammi)</label>
+                            <input type="number" id="weight-input" min="0" step="0.1" placeholder="Ad esempio: 500">
                         </div>
-                        <button id="add-btn" class="btn-primary">Aggiungi</button>
+                        <button id="add-btn" class="btn-primary" title="Aggiungi ingrediente"><i class="fas fa-plus"></i></button>
                     </div>
                 </div>
             </section>
 
             <!-- Sezione Ingredienti Aggiunti -->
-            <section class="ingredients-list-section">
-                <div class="section-header">
-                    <h2>Ingredienti nella Ricetta</h2>
-                    <button id="clear-btn" class="btn-secondary">Nuova Preparazione</button>
-                </div>
-                <div class="flavor-name-display">
-                    <label for="flavor-name-input"><strong>Gusto:</strong></label>
-                    <input type="text" id="flavor-name-input" value="Gelato Artigianale" placeholder="Inserisci nome gusto...">
+            <section class="ingredients-list-section hidden" id="ingredients-list-section">
+                <div class="section-header-with-flavor">
+                    <h2>Ingredienti nella ricetta</h2>
+                    <span class="flavor-badge" id="flavor-badge-list"></span>
                 </div>
                 <div id="ingredients-list" class="ingredients-list">
                     <p class="empty-message">Nessun ingrediente aggiunto. Inizia aggiungendo degli ingredienti!</p>
@@ -53,13 +86,16 @@
             </section>
 
             <!-- Sezione Risultati -->
-            <section class="results-section">
-                <h2>Analisi Nutrizionale e Proprietà</h2>
+            <section class="results-section hidden" id="results-section">
+                <div class="section-header-with-flavor">
+                    <h2>Analisi nutrizionale e proprietà del geleato</h2>
+                    <span class="flavor-badge" id="flavor-badge-results"></span>
+                </div>
                 
                 <div class="results-grid">
                     <!-- Peso Totale -->
                     <div class="result-card highlight">
-                        <h3>Composizione Ricetta</h3>
+                        <h3>Composizione ricetta</h3>
                         <div class="weight-display" id="total-weight-display">0 g</div>
                         <div class="ingredients-blocks" id="ingredients-blocks"></div>
                     </div>
@@ -144,15 +180,18 @@
             </section>
 
             <!-- Sezione Etichetta Stampabile -->
-            <section class="print-section">
-                <div class="section-header">
+            <section class="print-section hidden" id="print-section">
+                <div class="section-header-with-flavor">
                     <h2>Etichetta Prodotto</h2>
+                    <span class="flavor-badge" id="flavor-badge-print"></span>
+                </div>
+                <div class="print-actions">
                     <button id="generate-label-btn" class="btn-primary">Genera Etichetta per Stampa</button>
                 </div>
                 <div id="label-container" class="label-container hidden">
                     <div class="label-content">
                         <div class="label-header">
-                            <img src="logo.jpg" alt="Logo Fiori Celesti" class="label-logo">
+                            <img src="imgs/logo.jpg" alt="Logo Fiori Celesti" class="label-logo">
                             <div>
                                 <h3>Fiori Celesti</h3>
                                 <p class="label-product-name" id="label-flavor-name">Gelato Artigianale</p>
@@ -217,6 +256,45 @@
         </footer>
     </div>
 
+    <!-- Modale per visualizzare dati ingrediente -->
+    <div id="ingredient-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2 id="modal-ingredient-name"></h2>
+            <div class="modal-data-grid">
+                <div class="modal-data-item">
+                    <span class="modal-label">Acqua:</span>
+                    <span class="modal-value" id="modal-water"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">Zuccheri:</span>
+                    <span class="modal-value" id="modal-sugars"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">Grassi:</span>
+                    <span class="modal-value" id="modal-fats"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">Proteine (SLNG):</span>
+                    <span class="modal-value" id="modal-proteins"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">Altri solidi:</span>
+                    <span class="modal-value" id="modal-other-solids"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">POD:</span>
+                    <span class="modal-value" id="modal-pod"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">PAC:</span>
+                    <span class="modal-value" id="modal-pac"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="ingredientsDB.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

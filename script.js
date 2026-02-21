@@ -1,278 +1,21 @@
-// Database degli ingredienti con proprietà nutrizionali e caratteristiche per il gelato
-// Tutti i valori sono per 100g di prodotto
-const ingredientsDB = {
-    "Latte Intero": {
-        water: 87.5,
-        sugars: 4.8,
-        fats: 3.5,
-        proteins: 3.3,
-        otherSolids: 0.9,
-        pod: 4.8,    // Potere Dolcificante
-        pac: 30      // Potere Anticongelante
-    },
-    "Latte Scremato": {
-        water: 90.5,
-        sugars: 5.0,
-        fats: 0.2,
-        proteins: 3.5,
-        otherSolids: 0.8,
-        pod: 5.0,
-        pac: 32
-    },
-    "Panna 35%": {
-        water: 62.0,
-        sugars: 3.5,
-        fats: 35.0,
-        proteins: 2.5,
-        otherSolids: 0.5,
-        pod: 3.5,
-        pac: 22
-    },
-    "Panna 35% UHT": {
-        water: 59.0,
-        sugars: 3.3,
-        fats: 35.0,
-        proteins: 2.2,
-        otherSolids: 0.5,
-        pod: 3.3,
-        pac: 20
-    },
-    "Latte Condensato": {
-        water: 27.0,
-        sugars: 55.0,
-        fats: 8.0,
-        proteins: 8.0,
-        otherSolids: 2.0,
-        pod: 55.0,
-        pac: 260
-    },
-    "Latte in Polvere": {
-        water: 3.0,
-        sugars: 38.0,
-        fats: 26.0,
-        proteins: 26.0,
-        otherSolids: 7.0,
-        pod: 38.0,
-        pac: 180
-    },
-    "Uova Intere": {
-        water: 76.0,
-        sugars: 0.7,
-        fats: 10.5,
-        proteins: 12.5,
-        otherSolids: 0.3,
-        pod: 0.7,
-        pac: 8
-    },
-    "Tuorli d'Uovo": {
-        water: 50.0,
-        sugars: 0.5,
-        fats: 31.0,
-        proteins: 16.0,
-        otherSolids: 2.5,
-        pod: 0.5,
-        pac: 5
-    },
-    "Zucchero Semolato": {
-        water: 0.5,
-        sugars: 99.5,
-        fats: 0.0,
-        proteins: 0.0,
-        otherSolids: 0.0,
-        pod: 100.0,
-        pac: 190
-    },
-    "Destrosio": {
-        water: 0.5,
-        sugars: 99.5,
-        fats: 0.0,
-        proteins: 0.0,
-        otherSolids: 0.0,
-        pod: 70.0,
-        pac: 190
-    },
-    "Sciroppo di Glucosio": {
-        water: 20.0,
-        sugars: 78.0,
-        fats: 0.0,
-        proteins: 0.0,
-        otherSolids: 2.0,
-        pod: 35.0,
-        pac: 150
-    },
-    "Miele": {
-        water: 17.0,
-        sugars: 82.0,
-        fats: 0.0,
-        proteins: 0.3,
-        otherSolids: 0.7,
-        pod: 130.0,
-        pac: 190
-    },
-    "Cacao Amaro in Polvere": {
-        water: 3.0,
-        sugars: 2.0,
-        fats: 20.0,
-        proteins: 20.0,
-        otherSolids: 55.0,
-        pod: 2.0,
-        pac: 5
-    },
-    "Cioccolato Fondente": {
-        water: 1.0,
-        sugars: 47.0,
-        fats: 35.0,
-        proteins: 6.0,
-        otherSolids: 11.0,
-        pod: 47.0,
-        pac: 90
-    },
-    "Nocciole": {
-        water: 5.0,
-        sugars: 4.0,
-        fats: 62.0,
-        proteins: 15.0,
-        otherSolids: 14.0,
-        pod: 4.0,
-        pac: 8
-    },
-    "Mandorle": {
-        water: 5.0,
-        sugars: 4.0,
-        fats: 50.0,
-        proteins: 21.0,
-        otherSolids: 20.0,
-        pod: 4.0,
-        pac: 8
-    },
-    "Pistacchi": {
-        water: 4.0,
-        sugars: 8.0,
-        fats: 45.0,
-        proteins: 20.0,
-        otherSolids: 23.0,
-        pod: 8.0,
-        pac: 15
-    },
-    "Pasta di Nocciole": {
-        water: 2.0,
-        sugars: 5.0,
-        fats: 65.0,
-        proteins: 15.0,
-        otherSolids: 13.0,
-        pod: 5.0,
-        pac: 10
-    },
-    "Pasta di Pistacchio": {
-        water: 2.0,
-        sugars: 8.0,
-        fats: 55.0,
-        proteins: 20.0,
-        otherSolids: 15.0,
-        pod: 8.0,
-        pac: 15
-    },
-    "Burro": {
-        water: 16.0,
-        sugars: 0.5,
-        fats: 82.0,
-        proteins: 0.8,
-        otherSolids: 0.7,
-        pod: 0.5,
-        pac: 3
-    },
-    "Mascarpone": {
-        water: 49.0,
-        sugars: 3.0,
-        fats: 42.0,
-        proteins: 5.0,
-        otherSolids: 1.0,
-        pod: 3.0,
-        pac: 18
-    },
-    "Ricotta": {
-        water: 74.0,
-        sugars: 3.5,
-        fats: 13.0,
-        proteins: 8.5,
-        otherSolids: 1.0,
-        pod: 3.5,
-        pac: 20
-    },
-    "Yogurt Intero": {
-        water: 88.0,
-        sugars: 4.0,
-        fats: 3.5,
-        proteins: 3.5,
-        otherSolids: 1.0,
-        pod: 4.0,
-        pac: 24
-    },
-    "Fragole": {
-        water: 90.0,
-        sugars: 5.5,
-        fats: 0.4,
-        proteins: 0.7,
-        otherSolids: 3.4,
-        pod: 5.5,
-        pac: 35
-    },
-    "Banane": {
-        water: 75.0,
-        sugars: 20.0,
-        fats: 0.3,
-        proteins: 1.1,
-        otherSolids: 3.6,
-        pod: 20.0,
-        pac: 120
-    },
-    "Limone (succo)": {
-        water: 91.0,
-        sugars: 2.5,
-        fats: 0.3,
-        proteins: 0.4,
-        otherSolids: 5.8,
-        pod: 2.5,
-        pac: 15
-    },
-    "Vaniglia (estratto)": {
-        water: 35.0,
-        sugars: 12.0,
-        fats: 0.1,
-        proteins: 0.1,
-        otherSolids: 52.8,
-        pod: 12.0,
-        pac: 70
-    },
-    "Stabilizzante/Addensante": {
-        water: 8.0,
-        sugars: 0.0,
-        fats: 0.0,
-        proteins: 0.0,
-        otherSolids: 92.0,
-        pod: 0.0,
-        pac: 0
-    },
-    "Neutro per Gelato": {
-        water: 5.0,
-        sugars: 70.0,
-        fats: 0.0,
-        proteins: 0.0,
-        otherSolids: 25.0,
-        pod: 70.0,
-        pac: 130
-    }
-};
+// Database degli ingredienti - caricato da ingredientsDB.js
+// let ingredientsDB definito in ingredientsDB.js
 
 // Array degli ingredienti aggiunti alla ricetta
 let recipe = [];
 let flavorName = 'Gelato Artigianale';
+let isFlavorConfirmed = false;
+let currentUser = null;
 
 // Inizializza l'applicazione
 function init() {
     populateIngredientSelect();
     setupEventListeners();
     updateDisplay();
+    // Nascondi tutto tranne la sezione preparazione all'inizio
+    hideWorkingSections();
+    // Controlla se c'è un utente salvato
+    checkSavedUser();
 }
 
 // Popola il select con gli ingredienti
@@ -293,17 +36,175 @@ function setupEventListeners() {
     document.getElementById('add-btn').addEventListener('click', addIngredient);
     document.getElementById('clear-btn').addEventListener('click', clearRecipe);
     document.getElementById('generate-label-btn').addEventListener('click', generateLabel);
+    document.getElementById('confirm-flavor-btn').addEventListener('click', confirmFlavorName);
+    document.getElementById('login-btn').addEventListener('click', handleLogin);
+    document.getElementById('logout-btn').addEventListener('click', handleLogout);
     
-    // Event listener per il nome del gusto
+    // Permetti di premere Enter per fare login
+    document.getElementById('username-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleLogin();
+        }
+    });
+    
+    // Event listener per il nome del gusto - solo aggiornamento valore
     document.getElementById('flavor-name-input').addEventListener('input', (e) => {
         flavorName = e.target.value.trim() || 'Gelato Artigianale';
     });
     
-    // Permetti di premere Enter per aggiungere
+    // Permetti di premere Enter per confermare il gusto
+    document.getElementById('flavor-name-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            confirmFlavorName();
+        }
+    });
+    
+    // Permetti di premere Enter per aggiungere ingrediente
     document.getElementById('weight-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             addIngredient();
         }
+    });
+    
+    // Event listener per chiudere il modale
+    const modal = document.getElementById('ingredient-modal');
+    const closeBtn = document.querySelector('.modal-close');
+    
+    closeBtn.addEventListener('click', closeIngredientModal);
+    
+    // Chiudi il modale cliccando fuori
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeIngredientModal();
+        }
+    });
+    
+    // Chiudi il modale con ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeIngredientModal();
+        }
+    });
+}
+
+// Gestisce il login dell'utente
+function handleLogin() {
+    const input = document.getElementById('username-input');
+    const username = input.value.trim();
+    
+    if (!username) {
+        alert('Inserisci il tuo nome per continuare.');
+        input.focus();
+        return;
+    }
+    
+    currentUser = username;
+    
+    // Salva il nome utente in localStorage
+    localStorage.setItem('gelatoUserName', username);
+    
+    // Nascondi il form di login
+    document.getElementById('login-form').classList.add('hidden');
+    
+    // Mostra le info utente
+    document.getElementById('username-display').textContent = username;
+    document.getElementById('user-info').classList.remove('hidden');
+    
+    // Mostra il contenuto principale
+    showMainContent();
+}
+
+// Gestisce il logout dell'utente
+function handleLogout() {
+    if (confirm('Vuoi effettuare il logout? Tutti i dati della ricetta corrente verranno persi.')) {
+        // Rimuovi il dato da localStorage
+        localStorage.removeItem('gelatoUserName');
+        
+        // Ricarica la pagina per ripartire da zero
+        location.reload();
+    }
+}
+
+// Controlla se c'è un utente salvato e fa login automatico
+function checkSavedUser() {
+    const savedUsername = localStorage.getItem('gelatoUserName');
+    
+    if (savedUsername) {
+        // Utente già loggato, ripristina la sessione
+        currentUser = savedUsername;
+        document.getElementById('username-display').textContent = savedUsername;
+        document.getElementById('login-form').classList.add('hidden');
+        document.getElementById('user-info').classList.remove('hidden');
+        showMainContent();
+    } else {
+        // Nessun utente salvato, nascondi il contenuto principale
+        hideMainContent();
+    }
+}
+
+// Nascondi il contenuto principale
+function hideMainContent() {
+    const main = document.querySelector('main');
+    if (main) {
+        main.classList.add('hidden');
+    }
+}
+
+// Mostra il contenuto principale
+function showMainContent() {
+    const main = document.querySelector('main');
+    if (main) {
+        main.classList.remove('hidden');
+    }
+}
+
+// Conferma il nome del gusto e mostra le sezioni di lavoro
+function confirmFlavorName() {
+    const input = document.getElementById('flavor-name-input');
+    const name = input.value.trim();
+    
+    if (!name) {
+        alert('Inserisci il nome del gusto per continuare.');
+        input.focus();
+        return;
+    }
+    
+    flavorName = name;
+    isFlavorConfirmed = true;
+    
+    // Nascondi il form e mostra l'header con il gusto
+    document.getElementById('flavor-name-form').classList.add('hidden');
+    document.getElementById('preparation-header').classList.remove('hidden');
+    document.getElementById('flavor-label-display').textContent = flavorName;
+    
+    // Mostra le sezioni di lavoro
+    showWorkingSections();
+    
+    // Aggiorna i badge del gusto
+    updateFlavorBadges();
+}
+
+// Nascondi le sezioni di lavoro
+function hideWorkingSections() {
+    document.getElementById('add-ingredient-section').classList.add('hidden');
+    document.getElementById('ingredients-list-section').classList.add('hidden');
+    document.getElementById('results-section').classList.add('hidden');
+    document.getElementById('print-section').classList.add('hidden');
+}
+
+// Mostra le sezioni di lavoro
+function showWorkingSections() {
+    document.getElementById('add-ingredient-section').classList.remove('hidden');
+    document.getElementById('ingredients-list-section').classList.remove('hidden');
+    document.getElementById('results-section').classList.remove('hidden');
+    document.getElementById('print-section').classList.remove('hidden');
+}
+
+// Aggiorna i badge del gusto in tutte le sezioni
+function updateFlavorBadges() {
+    const badges = ['flavor-badge-add', 'flavor-badge-list', 'flavor-badge-results', 'flavor-badge-print'];
+    badges.forEach(id => {
+        document.getElementById(id).textContent = flavorName;
     });
 }
 
@@ -355,19 +256,11 @@ function updateWeight(id, newWeight) {
     }
 }
 
-// Pulisci la ricetta
+// Pulisci la ricetta e ricarica la pagina
 function clearRecipe() {
-    if (recipe.length > 0) {
-        if (confirm('Vuoi iniziare una nuova preparazione? Tutti gli ingredienti verranno rimossi.')) {
-            recipe = [];
-            flavorName = 'Gelato Artigianale';
-            document.getElementById('flavor-name-input').value = flavorName;
-            updateDisplay();
-        }
-    } else {
-        // Se non ci sono ingredienti, resetta comunque il nome
-        flavorName = 'Gelato Artigianale';
-        document.getElementById('flavor-name-input').value = flavorName;
+    if (confirm('Vuoi iniziare una nuova preparazione? Tutti i dati verranno persi.')) {
+        // Ricarica la pagina per ricominciare da zero
+        location.reload();
     }
 }
 
@@ -390,17 +283,20 @@ function updateIngredientsList() {
     listContainer.innerHTML = recipe.map(item => `
         <div class="ingredient-item">
             <span class="ingredient-name">${item.name}</span>
-            <div class="ingredient-weight">
-                <input 
-                    type="number" 
-                    value="${item.weight}" 
-                    min="0" 
-                    step="0.1"
-                    onchange="updateWeight(${item.id}, this.value)"
-                />
-                <span>g</span>
+            <div class="ingredient-actions">
+                <div class="ingredient-weight">
+                    <input 
+                        type="number" 
+                        value="${item.weight}" 
+                        min="0" 
+                        step="0.1"
+                        onchange="updateWeight(${item.id}, this.value)"
+                    />
+                    <span>g</span>
+                </div>
+                <button class="btn-info" onclick="showIngredientModal('${item.name.replace(/'/g, "\\'")}')" title="Visualizza dati ingrediente"><i class="fas fa-info-circle"></i></button>
+                <button class="btn-danger" onclick="removeIngredient(${item.id})" title="Rimuovi ingrediente"><i class="fas fa-trash-alt"></i></button>
             </div>
-            <button class="btn-danger" onclick="removeIngredient(${item.id})">Rimuovi</button>
         </div>
     `).join('');
 }
@@ -434,7 +330,7 @@ function updateIngredientsBlocks() {
         const color = getIngredientColor(item.name, index);
         
         return `
-            <div class="ingredient-block" style="flex-grow: ${item.weight}; background-color: ${color};">
+            <div class="ingredient-block" style="flex-grow: ${item.weight}; background-color: ${color}; cursor: pointer;" onclick="showIngredientModal('${item.name.replace(/'/g, "\\'")}')" title="Clicca per vedere i dettagli di ${item.name}">
                 <div class="ingredient-block-content">
                     <div class="ingredient-block-name">${item.name}</div>
                     <div class="ingredient-block-weight">${item.weight}g</div>
@@ -610,6 +506,36 @@ function generateLabel() {
     
     // Scroll verso l'etichetta
     labelContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Mostra il modale con i dati dell'ingrediente
+function showIngredientModal(ingredientName) {
+    const ingredient = ingredientsDB[ingredientName];
+    
+    if (!ingredient) {
+        console.error('Ingrediente non trovato:', ingredientName);
+        return;
+    }
+    
+    // Popola il modale
+    document.getElementById('modal-ingredient-name').textContent = ingredientName;
+    document.getElementById('modal-water').textContent = `${ingredient.water.toFixed(1)}%`;
+    document.getElementById('modal-sugars').textContent = `${ingredient.sugars.toFixed(1)}%`;
+    document.getElementById('modal-fats').textContent = `${ingredient.fats.toFixed(1)}%`;
+    document.getElementById('modal-proteins').textContent = `${ingredient.proteins.toFixed(1)}%`;
+    document.getElementById('modal-other-solids').textContent = `${ingredient.otherSolids.toFixed(1)}%`;
+    document.getElementById('modal-pod').textContent = ingredient.pod.toFixed(1);
+    document.getElementById('modal-pac').textContent = ingredient.pac.toFixed(1);
+    
+    // Mostra il modale
+    const modal = document.getElementById('ingredient-modal');
+    modal.style.display = 'block';
+}
+
+// Chiudi il modale
+function closeIngredientModal() {
+    const modal = document.getElementById('ingredient-modal');
+    modal.style.display = 'none';
 }
 
 // Inizializza l'app quando il DOM è pronto

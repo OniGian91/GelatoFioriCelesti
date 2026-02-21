@@ -1,0 +1,263 @@
+{
+  "Latte Intero": {
+    "water": 87.5,
+    "sugars": 4.8,
+    "fats": 3.5,
+    "proteins": 3.3,
+    "otherSolids": 0.9,
+    "pod": 4.8,
+    "pac": 30
+  },
+  "Latte Scremato": {
+    "water": 90.5,
+    "sugars": 5.0,
+    "fats": 0.2,
+    "proteins": 3.5,
+    "otherSolids": 0.8,
+    "pod": 5.0,
+    "pac": 32
+  },
+  "Panna 35%": {
+    "water": 62.0,
+    "sugars": 3.5,
+    "fats": 35.0,
+    "proteins": 2.5,
+    "otherSolids": 0.5,
+    "pod": 3.5,
+    "pac": 22
+  },
+  "Panna 35% UHT": {
+    "water": 59.0,
+    "sugars": 3.3,
+    "fats": 35.0,
+    "proteins": 2.2,
+    "otherSolids": 0.5,
+    "pod": 3.3,
+    "pac": 20
+  },
+  "Latte Condensato": {
+    "water": 27.0,
+    "sugars": 55.0,
+    "fats": 8.0,
+    "proteins": 8.0,
+    "otherSolids": 2.0,
+    "pod": 55.0,
+    "pac": 260
+  },
+  "Latte in Polvere": {
+    "water": 3.0,
+    "sugars": 38.0,
+    "fats": 26.0,
+    "proteins": 26.0,
+    "otherSolids": 7.0,
+    "pod": 38.0,
+    "pac": 180
+  },
+  "Uova Intere": {
+    "water": 76.0,
+    "sugars": 0.7,
+    "fats": 10.5,
+    "proteins": 12.5,
+    "otherSolids": 0.3,
+    "pod": 0.7,
+    "pac": 8
+  },
+  "Tuorli d'Uovo": {
+    "water": 50.0,
+    "sugars": 0.5,
+    "fats": 31.0,
+    "proteins": 16.0,
+    "otherSolids": 2.5,
+    "pod": 0.5,
+    "pac": 5
+  },
+  "Zucchero Semolato": {
+    "water": 0.5,
+    "sugars": 99.5,
+    "fats": 0.0,
+    "proteins": 0.0,
+    "otherSolids": 0.0,
+    "pod": 100.0,
+    "pac": 190
+  },
+  "Destrosio": {
+    "water": 0.5,
+    "sugars": 99.5,
+    "fats": 0.0,
+    "proteins": 0.0,
+    "otherSolids": 0.0,
+    "pod": 70.0,
+    "pac": 190
+  },
+  "Sciroppo di Glucosio": {
+    "water": 20.0,
+    "sugars": 78.0,
+    "fats": 0.0,
+    "proteins": 0.0,
+    "otherSolids": 2.0,
+    "pod": 35.0,
+    "pac": 150
+  },
+  "Miele": {
+    "water": 17.0,
+    "sugars": 82.0,
+    "fats": 0.0,
+    "proteins": 0.3,
+    "otherSolids": 0.7,
+    "pod": 130.0,
+    "pac": 190
+  },
+  "Cacao Amaro in Polvere": {
+    "water": 3.0,
+    "sugars": 2.0,
+    "fats": 20.0,
+    "proteins": 20.0,
+    "otherSolids": 55.0,
+    "pod": 2.0,
+    "pac": 5
+  },
+  "Cioccolato Fondente": {
+    "water": 1.0,
+    "sugars": 47.0,
+    "fats": 35.0,
+    "proteins": 6.0,
+    "otherSolids": 11.0,
+    "pod": 47.0,
+    "pac": 90
+  },
+  "Nocciole": {
+    "water": 5.0,
+    "sugars": 4.0,
+    "fats": 62.0,
+    "proteins": 15.0,
+    "otherSolids": 14.0,
+    "pod": 4.0,
+    "pac": 8
+  },
+  "Mandorle": {
+    "water": 5.0,
+    "sugars": 4.0,
+    "fats": 50.0,
+    "proteins": 21.0,
+    "otherSolids": 20.0,
+    "pod": 4.0,
+    "pac": 8
+  },
+  "Pistacchi": {
+    "water": 4.0,
+    "sugars": 8.0,
+    "fats": 45.0,
+    "proteins": 20.0,
+    "otherSolids": 23.0,
+    "pod": 8.0,
+    "pac": 15
+  },
+  "Pasta di Nocciole": {
+    "water": 2.0,
+    "sugars": 5.0,
+    "fats": 65.0,
+    "proteins": 15.0,
+    "otherSolids": 13.0,
+    "pod": 5.0,
+    "pac": 10
+  },
+  "Pasta di Pistacchio": {
+    "water": 2.0,
+    "sugars": 8.0,
+    "fats": 55.0,
+    "proteins": 20.0,
+    "otherSolids": 15.0,
+    "pod": 8.0,
+    "pac": 15
+  },
+  "Burro": {
+    "water": 16.0,
+    "sugars": 0.5,
+    "fats": 82.0,
+    "proteins": 0.8,
+    "otherSolids": 0.7,
+    "pod": 0.5,
+    "pac": 3
+  },
+  "Mascarpone": {
+    "water": 49.0,
+    "sugars": 3.0,
+    "fats": 42.0,
+    "proteins": 5.0,
+    "otherSolids": 1.0,
+    "pod": 3.0,
+    "pac": 18
+  },
+  "Ricotta": {
+    "water": 74.0,
+    "sugars": 3.5,
+    "fats": 13.0,
+    "proteins": 8.5,
+    "otherSolids": 1.0,
+    "pod": 3.5,
+    "pac": 20
+  },
+  "Yogurt Intero": {
+    "water": 88.0,
+    "sugars": 4.0,
+    "fats": 3.5,
+    "proteins": 3.5,
+    "otherSolids": 1.0,
+    "pod": 4.0,
+    "pac": 24
+  },
+  "Fragole": {
+    "water": 90.0,
+    "sugars": 5.5,
+    "fats": 0.4,
+    "proteins": 0.7,
+    "otherSolids": 3.4,
+    "pod": 5.5,
+    "pac": 35
+  },
+  "Banane": {
+    "water": 75.0,
+    "sugars": 20.0,
+    "fats": 0.3,
+    "proteins": 1.1,
+    "otherSolids": 3.6,
+    "pod": 20.0,
+    "pac": 120
+  },
+  "Limone (succo)": {
+    "water": 91.0,
+    "sugars": 2.5,
+    "fats": 0.3,
+    "proteins": 0.4,
+    "otherSolids": 5.8,
+    "pod": 2.5,
+    "pac": 15
+  },
+  "Vaniglia (estratto)": {
+    "water": 35.0,
+    "sugars": 12.0,
+    "fats": 0.1,
+    "proteins": 0.1,
+    "otherSolids": 52.8,
+    "pod": 12.0,
+    "pac": 70
+  },
+  "Stabilizzante/Addensante": {
+    "water": 8.0,
+    "sugars": 0.0,
+    "fats": 0.0,
+    "proteins": 0.0,
+    "otherSolids": 92.0,
+    "pod": 0.0,
+    "pac": 0
+  },
+  "Neutro per Gelato": {
+    "water": 5.0,
+    "sugars": 70.0,
+    "fats": 0.0,
+    "proteins": 0.0,
+    "otherSolids": 25.0,
+    "pod": 70.0,
+    "pac": 130
+  }
+}
