@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelato Fiori Celesti - Calcolatore Ricette</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍦 Gelato Fiori Celesti</h1>
+            <p class="subtitle">Calcolatore per Ricette Gelato</p>
+        </header>
+
+        <main>
+            <!-- Sezione Aggiunta Ingredienti -->
+            <section class="add-ingredient-section">
+                <h2>Aggiungi Ingrediente</h2>
+                <div class="input-group">
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="ingredient-select">Ingrediente</label>
+                            <select id="ingredient-select">
+                                <option value="">Seleziona un ingrediente...</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="weight-input">Peso (g)</label>
+                            <input type="number" id="weight-input" min="0" step="0.1" placeholder="es. 500">
+                        </div>
+                        <button id="add-btn" class="btn-primary">Aggiungi</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sezione Ingredienti Aggiunti -->
+            <section class="ingredients-list-section">
+                <div class="section-header">
+                    <h2>Ingredienti nella Ricetta</h2>
+                    <button id="clear-btn" class="btn-secondary">Nuova Preparazione</button>
+                </div>
+                <div id="ingredients-list" class="ingredients-list">
+                    <p class="empty-message">Nessun ingrediente aggiunto. Inizia aggiungendo degli ingredienti!</p>
+                </div>
+            </section>
+
+            <!-- Sezione Risultati -->
+            <section class="results-section">
+                <h2>Analisi Nutrizionale e Proprietà</h2>
+                
+                <div class="results-grid">
+                    <!-- Peso Totale -->
+                    <div class="result-card highlight">
+                        <h3>Peso Totale</h3>
+                        <div class="result-value" id="total-weight">0 g</div>
+                    </div>
+
+                    <!-- Macronutrienti -->
+                    <div class="result-card">
+                        <h3>Macronutrienti</h3>
+                        <div class="macro-grid">
+                            <div class="macro-item">
+                                <span class="macro-label">Acqua:</span>
+                                <span class="macro-value" id="water">0 g (0%)</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Zuccheri:</span>
+                                <span class="macro-value" id="sugars">0 g (0%)</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Grassi:</span>
+                                <span class="macro-value" id="fats">0 g (0%)</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Proteine:</span>
+                                <span class="macro-value" id="proteins">0 g (0%)</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Altri Solidi:</span>
+                                <span class="macro-value" id="other-solids">0 g (0%)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Proprietà del Gelato -->
+                    <div class="result-card">
+                        <h3>Proprietà del Gelato</h3>
+                        <div class="properties-grid">
+                            <div class="property-item">
+                                <span class="property-label">POD (Potere Dolcificante):</span>
+                                <span class="property-value" id="pod">0</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">PAC (Potere Anticongelante):</span>
+                                <span class="property-value" id="pac">0</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">Solidi Totali:</span>
+                                <span class="property-value" id="total-solids">0% (Ideale: 36-42%)</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">Grassi Totali:</span>
+                                <span class="property-value" id="total-fats-percent">0% (Ideale: 6-10%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Gelato Fiori Celesti</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
