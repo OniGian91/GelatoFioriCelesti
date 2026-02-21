@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fiori Celesti - Calcolatore Ricette Gelateria</title>
+    <title>Fiori Celesti - Calcolatore ricette gelateria</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -14,7 +14,7 @@
                 <img src="imgs/logo.jpg" alt="Logo Fiori Celesti" class="logo">
                 <div class="header-text">
                     <h1>Fiori Celesti</h1>
-                    <p class="subtitle">Calcolatore Ricette Gelateria</p>
+                    <p class="subtitle">Calcolatore ricette gelateria</p>
                 </div>
             </div>
             <div class="header-right">
@@ -41,13 +41,16 @@
                         <label for="flavor-name-input"><strong>Nome gusto:</strong></label>
                         <input type="text" id="flavor-name-input" placeholder="Inserisci nome gusto..." autofocus>
                     </div>
-                    <button id="confirm-flavor-btn" class="btn-primary"><i class="fas fa-check"></i> Conferma</button>
+                    <button id="confirm-flavor-btn" class="btn-success"><i class="fas fa-check"></i> Conferma</button>
                 </div>
                 <div class="preparation-header hidden" id="preparation-header">
                     <div class="flavor-label">
                         <span class="flavor-label-text" id="flavor-label-display">Gelato Artigianale</span>
                     </div>
-                    <button id="clear-btn" class="btn-secondary" title="Nuova preparazione"><i class="fas fa-file"></i> Nuovo</button>
+                    <div class="preparation-actions">
+                        <button id="edit-flavor-btn" class="btn-secondary" title="Rinomina gusto"><i class="fas fa-edit"></i> Rinomina</button>
+                        <button id="clear-btn" class="btn-secondary" title="Nuova preparazione"><i class="fas fa-file"></i> Nuovo</button>
+                    </div>
                 </div>
             </section>
 
@@ -177,6 +180,10 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="generate-label-action">
+                    <button id="generate-label-btn" class="btn-success"><i class="fas fa-check"></i> Conferma ricetta e genera etichetta</button>
+                </div>
             </section>
 
             <!-- Sezione Etichetta Stampabile -->
@@ -184,9 +191,6 @@
                 <div class="section-header-with-flavor">
                     <h2>Etichetta Prodotto</h2>
                     <span class="flavor-badge" id="flavor-badge-print"></span>
-                </div>
-                <div class="print-actions">
-                    <button id="generate-label-btn" class="btn-primary">Genera Etichetta per Stampa</button>
                 </div>
                 <div id="label-container" class="label-container hidden">
                     <div class="label-content">
@@ -247,6 +251,17 @@
 
                         <button id="print-btn" class="btn-secondary" onclick="window.print()">🖨️ Stampa Etichetta</button>
                     </div>
+                </div>
+            </section>
+
+            <!-- Sezione Cronologia -->
+            <section class="history-section hidden" id="history-section">
+                <div class="history-header" id="history-header">
+                    <h2><i class="fas fa-history"></i> Ricette recenti</h2>
+                    <i class="fas fa-chevron-down history-toggle-icon" id="history-toggle-icon"></i>
+                </div>
+                <div id="history-list" class="history-list">
+                    <p class="empty-message">Nessuna ricetta salvata ancora.</p>
                 </div>
             </section>
         </main>
