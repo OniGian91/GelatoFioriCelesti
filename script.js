@@ -266,6 +266,7 @@ const ingredientsDB = {
 
 // Array degli ingredienti aggiunti alla ricetta
 let recipe = [];
+let flavorName = 'Gelato Artigianale';
 
 // Inizializza l'applicazione
 function init() {
@@ -291,6 +292,12 @@ function populateIngredientSelect() {
 function setupEventListeners() {
     document.getElementById('add-btn').addEventListener('click', addIngredient);
     document.getElementById('clear-btn').addEventListener('click', clearRecipe);
+    document.getElementById('generate-label-btn').addEventListener('click', generateLabel);
+    
+    // Event listener per il nome del gusto
+    document.getElementById('flavor-name-input').addEventListener('input', (e) => {
+        flavorName = e.target.value.trim() || 'Gelato Artigianale';
+    });
     
     // Permetti di premere Enter per aggiungere
     document.getElementById('weight-input').addEventListener('keypress', (e) => {
@@ -353,8 +360,14 @@ function clearRecipe() {
     if (recipe.length > 0) {
         if (confirm('Vuoi iniziare una nuova preparazione? Tutti gli ingredienti verranno rimossi.')) {
             recipe = [];
+            flavorName = 'Gelato Artigianale';
+            document.getElementById('flavor-name-input').value = flavorName;
             updateDisplay();
         }
+    } else {
+        // Se non ci sono ingredienti, resetta comunque il nome
+        flavorName = 'Gelato Artigianale';
+        document.getElementById('flavor-name-input').value = flavorName;
     }
 }
 
@@ -362,6 +375,7 @@ function clearRecipe() {
 function updateDisplay() {
     updateIngredientsList();
     updateResults();
+    updateIngredientsBlocks();
 }
 
 // Aggiorna la lista degli ingredienti
@@ -391,14 +405,57 @@ function updateIngredientsList() {
     `).join('');
 }
 
+// Genera un colore per un ingrediente basato sul suo nome
+function getIngredientColor(name, index) {
+    const colors = [
+        '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+        '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B739', '#52B788',
+        '#FF8FA3', '#C9ADA7', '#A8DADC', '#F4A261', '#E9C46A',
+        '#2A9D8F', '#E76F51', '#8E7DBE', '#F4978E', '#84A59D'
+    ];
+    return colors[index % colors.length];
+}
+
+// Aggiorna la visualizzazione dei blocchi ingredienti
+function updateIngredientsBlocks() {
+    const blocksContainer = document.getElementById('ingredients-blocks');
+    
+    if (recipe.length === 0) {
+        blocksContainer.innerHTML = '<p class="no-ingredients-message">Aggiungi ingredienti per vedere la composizione</p>';
+        return;
+    }
+    
+    // Calcola peso totale per le proporzioni
+    const totalWeight = recipe.reduce((sum, item) => sum + item.weight, 0);
+    
+    // Crea i blocchi
+    blocksContainer.innerHTML = recipe.map((item, index) => {
+        const percentage = (item.weight / totalWeight * 100).toFixed(1);
+        const color = getIngredientColor(item.name, index);
+        
+        return `
+            <div class="ingredient-block" style="flex-grow: ${item.weight}; background-color: ${color};">
+                <div class="ingredient-block-content">
+                    <div class="ingredient-block-name">${item.name}</div>
+                    <div class="ingredient-block-weight">${item.weight}g</div>
+                    <div class="ingredient-block-percent">${percentage}%</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
 // Calcola e aggiorna i risultati
 function updateResults() {
     const totals = calculateTotals();
     
     // Peso totale
-    document.getElementById('total-weight').textContent = `${totals.totalWeight.toFixed(1)} g`;
+    document.getElementById('total-weight-display').textContent = `${totals.totalWeight.toFixed(1)} g`;
     
-    // Macronutrienti
+    // Aggiorna i blocchi degli ingredienti  
+    updateIngredientsBlocks();
+    
+    // Macronutrienti - Totale
     document.getElementById('water').textContent = 
         `${totals.water.toFixed(1)} g (${totals.waterPercent.toFixed(1)}%)`;
     document.getElementById('sugars').textContent = 
@@ -409,6 +466,24 @@ function updateResults() {
         `${totals.proteins.toFixed(1)} g (${totals.proteinsPercent.toFixed(1)}%)`;
     document.getElementById('other-solids').textContent = 
         `${totals.otherSolids.toFixed(1)} g (${totals.otherSolidsPercent.toFixed(1)}%)`;
+    
+    // Macronutrienti - per 100g
+    const water100g = totals.totalWeight > 0 ? (totals.water / totals.totalWeight) * 100 : 0;
+    const sugars100g = totals.totalWeight > 0 ? (totals.sugars / totals.totalWeight) * 100 : 0;
+    const fats100g = totals.totalWeight > 0 ? (totals.fats / totals.totalWeight) * 100 : 0;
+    const proteins100g = totals.totalWeight > 0 ? (totals.proteins / totals.totalWeight) * 100 : 0;
+    const otherSolids100g = totals.totalWeight > 0 ? (totals.otherSolids / totals.totalWeight) * 100 : 0;
+    
+    document.getElementById('water-100g').textContent = 
+        `${water100g.toFixed(1)} g (${totals.waterPercent.toFixed(1)}%)`;
+    document.getElementById('sugars-100g').textContent = 
+        `${sugars100g.toFixed(1)} g (${totals.sugarsPercent.toFixed(1)}%)`;
+    document.getElementById('fats-100g').textContent = 
+        `${fats100g.toFixed(1)} g (${totals.fatsPercent.toFixed(1)}%)`;
+    document.getElementById('proteins-100g').textContent = 
+        `${proteins100g.toFixed(1)} g (${totals.proteinsPercent.toFixed(1)}%)`;
+    document.getElementById('other-solids-100g').textContent = 
+        `${otherSolids100g.toFixed(1)} g (${totals.otherSolidsPercent.toFixed(1)}%)`;
     
     // Proprietà del gelato
     document.getElementById('pod').textContent = totals.pod.toFixed(1);
@@ -485,6 +560,56 @@ function getFatsStatus(percent) {
     } else {
         return '✗ Troppo alto';
     }
+}
+
+// Genera etichetta per stampa
+function generateLabel() {
+    if (recipe.length === 0) {
+        alert('Aggiungi almeno un ingrediente prima di generare l\'etichetta!');
+        return;
+    }
+    
+    const totals = calculateTotals();
+    const labelContainer = document.getElementById('label-container');
+    
+    // Mostra il container dell'etichetta
+    labelContainer.classList.remove('hidden');
+    
+    // Aggiorna il nome del gusto nell'etichetta
+    document.getElementById('label-flavor-name').textContent = flavorName;
+    
+    // Ordina gli ingredienti per peso (dal più presente al meno)
+    const sortedIngredients = [...recipe].sort((a, b) => b.weight - a.weight);
+    
+    // Genera la lista degli ingredienti
+    const ingredientsList = sortedIngredients.map(item => item.name).join(', ').toLowerCase();
+    document.getElementById('label-ingredients').textContent = ingredientsList + '.';
+    
+    // Calcola valori nutrizionali per 100g
+    const water100g = totals.totalWeight > 0 ? (totals.water / totals.totalWeight) * 100 : 0;
+    const sugars100g = totals.totalWeight > 0 ? (totals.sugars / totals.totalWeight) * 100 : 0;
+    const fats100g = totals.totalWeight > 0 ? (totals.fats / totals.totalWeight) * 100 : 0;
+    const proteins100g = totals.totalWeight > 0 ? (totals.proteins / totals.totalWeight) * 100 : 0;
+    const otherSolids100g = totals.totalWeight > 0 ? (totals.otherSolids / totals.totalWeight) * 100 : 0;
+    
+    // Calcola carboidrati totali (zuccheri + altri carboidrati approssimativi)
+    const carbs100g = sugars100g; // Per gelato, la maggior parte dei carboidrati sono zuccheri
+    
+    // Calcola energia (kcal per 100g)
+    // Grassi: 9 kcal/g, Carboidrati: 4 kcal/g, Proteine: 4 kcal/g
+    const kcal = (fats100g * 9) + (carbs100g * 4) + (proteins100g * 4);
+    const kj = kcal * 4.184; // Conversione kcal a kJ
+    
+    // Popola la tabella nutrizionale
+    document.getElementById('label-energy').textContent = `${Math.round(kj)} kJ / ${Math.round(kcal)} kcal`;
+    document.getElementById('label-fats').textContent = `${fats100g.toFixed(1)} g`;
+    document.getElementById('label-saturated').textContent = `${(fats100g * 0.6).toFixed(1)} g`; // Stima ~60% saturi
+    document.getElementById('label-carbs').textContent = `${carbs100g.toFixed(1)} g`;
+    document.getElementById('label-sugars').textContent = `${sugars100g.toFixed(1)} g`;
+    document.getElementById('label-proteins').textContent = `${proteins100g.toFixed(1)} g`;
+    
+    // Scroll verso l'etichetta
+    labelContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // Inizializza l'app quando il DOM è pronto

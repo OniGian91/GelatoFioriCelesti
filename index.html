@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gelato Fiori Celesti - Calcolatore Ricette</title>
+    <title>Fiori Celesti - Calcolatore Ricette Gelateria</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🍦 Gelato Fiori Celesti</h1>
-            <p class="subtitle">Calcolatore per Ricette Gelato</p>
+            <img src="logo.jpg" alt="Logo Fiori Celesti" class="logo">
+            <div class="header-text">
+                <h1>Fiori Celesti</h1>
+                <p class="subtitle">Calcolatore Ricette Gelateria</p>
+            </div>
         </header>
 
         <main>
@@ -40,6 +43,10 @@
                     <h2>Ingredienti nella Ricetta</h2>
                     <button id="clear-btn" class="btn-secondary">Nuova Preparazione</button>
                 </div>
+                <div class="flavor-name-display">
+                    <label for="flavor-name-input"><strong>Gusto:</strong></label>
+                    <input type="text" id="flavor-name-input" value="Gelato Artigianale" placeholder="Inserisci nome gusto...">
+                </div>
                 <div id="ingredients-list" class="ingredients-list">
                     <p class="empty-message">Nessun ingrediente aggiunto. Inizia aggiungendo degli ingredienti!</p>
                 </div>
@@ -52,13 +59,14 @@
                 <div class="results-grid">
                     <!-- Peso Totale -->
                     <div class="result-card highlight">
-                        <h3>Peso Totale</h3>
-                        <div class="result-value" id="total-weight">0 g</div>
+                        <h3>Composizione Ricetta</h3>
+                        <div class="weight-display" id="total-weight-display">0 g</div>
+                        <div class="ingredients-blocks" id="ingredients-blocks"></div>
                     </div>
 
-                    <!-- Macronutrienti -->
+                    <!-- Macronutrienti Totali -->
                     <div class="result-card">
-                        <h3>Macronutrienti</h3>
+                        <h3>Macronutrienti - Totale</h3>
                         <div class="macro-grid">
                             <div class="macro-item">
                                 <span class="macro-label">Acqua:</span>
@@ -79,6 +87,33 @@
                             <div class="macro-item">
                                 <span class="macro-label">Altri Solidi:</span>
                                 <span class="macro-value" id="other-solids">0 g (0%)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Macronutrienti per 100g -->
+                    <div class="result-card">
+                        <h3>Macronutrienti - per 100g</h3>
+                        <div class="macro-grid">
+                            <div class="macro-item">
+                                <span class="macro-label">Acqua:</span>
+                                <span class="macro-value" id="water-100g">0 g (0%)</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Zuccheri:</span>
+                                <span class="macro-value" id="sugars-100g">0 g (0%)</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Grassi:</span>
+                                <span class="macro-value" id="fats-100g">0 g (0%)</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Proteine:</span>
+                                <span class="macro-value" id="proteins-100g">0 g (0%)</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Altri Solidi:</span>
+                                <span class="macro-value" id="other-solids-100g">0 g (0%)</span>
                             </div>
                         </div>
                     </div>
@@ -104,6 +139,74 @@
                                 <span class="property-value" id="total-fats-percent">0% (Ideale: 6-10%)</span>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sezione Etichetta Stampabile -->
+            <section class="print-section">
+                <div class="section-header">
+                    <h2>Etichetta Prodotto</h2>
+                    <button id="generate-label-btn" class="btn-primary">Genera Etichetta per Stampa</button>
+                </div>
+                <div id="label-container" class="label-container hidden">
+                    <div class="label-content">
+                        <div class="label-header">
+                            <img src="logo.jpg" alt="Logo Fiori Celesti" class="label-logo">
+                            <div>
+                                <h3>Fiori Celesti</h3>
+                                <p class="label-product-name" id="label-flavor-name">Gelato Artigianale</p>
+                            </div>
+                        </div>
+
+                        <div class="label-section">
+                            <h4>Ingredienti</h4>
+                            <p id="label-ingredients" class="ingredients-text"></p>
+                        </div>
+
+                        <div class="label-section">
+                            <h4>Informazioni Nutrizionali</h4>
+                            <p class="nutrition-subtitle">Valori medi per 100 g</p>
+                            <table class="nutrition-table">
+                                <tbody>
+                                    <tr>
+                                        <td class="nutrition-label">Energia</td>
+                                        <td class="nutrition-value" id="label-energy">0 kJ / 0 kcal</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="nutrition-label">Grassi</td>
+                                        <td class="nutrition-value" id="label-fats">0 g</td>
+                                    </tr>
+                                    <tr class="sub-row">
+                                        <td class="nutrition-label indent">di cui acidi grassi saturi</td>
+                                        <td class="nutrition-value" id="label-saturated">- g</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="nutrition-label">Carboidrati</td>
+                                        <td class="nutrition-value" id="label-carbs">0 g</td>
+                                    </tr>
+                                    <tr class="sub-row">
+                                        <td class="nutrition-label indent">di cui zuccheri</td>
+                                        <td class="nutrition-value" id="label-sugars">0 g</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="nutrition-label">Proteine</td>
+                                        <td class="nutrition-value" id="label-proteins">0 g</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="nutrition-label">Sale</td>
+                                        <td class="nutrition-value" id="label-salt">< 0,01 g</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="label-footer">
+                            <p>Prodotto artigianale da consumarsi preferibilmente entro pochi giorni dalla produzione.</p>
+                            <p>Conservare a -18°C</p>
+                        </div>
+
+                        <button id="print-btn" class="btn-secondary" onclick="window.print()">🖨️ Stampa Etichetta</button>
                     </div>
                 </div>
             </section>
