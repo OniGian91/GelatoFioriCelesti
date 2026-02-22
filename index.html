@@ -11,7 +11,9 @@
     <div class="container">
         <header>
             <div class="header-left">
-                <img src="imgs/logo.jpg" alt="Logo Fiori Celesti" class="logo">
+                <a href="index.html" style="display: inline-block; cursor: pointer;">
+                    <img src="imgs/logo.jpg" alt="Logo Fiori Celesti" class="logo" style="cursor: pointer;">
+                </a>
                 <div class="header-text">
                     <h1>Fiori Celesti</h1>
                     <p class="subtitle">Calcolatore ricette gelateria</p>
@@ -35,7 +37,7 @@
         <main>
             <!-- Sezione Preparazione -->
             <section class="preparation-section">
-                <h2>Preparazione</h2>
+                <h2><i class="fas fa-clipboard-list"></i> Preparazione</h2>
                 <div class="preparation-content" id="flavor-name-form">
                     <div class="flavor-name-container">
                         <label for="flavor-name-input"><strong>Nome gusto:</strong></label>
@@ -56,9 +58,11 @@
 
             <!-- Sezione Aggiunta Ingredienti -->
             <section class="add-ingredient-section hidden" id="add-ingredient-section">
-                <div class="section-header-with-flavor">
-                    <h2>Aggiungi ingrediente</h2>
-                    <span class="flavor-badge" id="flavor-badge-add"></span>
+                <div class="section-header-with-link">
+                    <h2><i class="fas fa-plus-circle"></i> Aggiungi ingrediente</h2>
+                    <a href="ingredienti.html" target="_blank" class="btn-warning btn-small" title="Apri database ingredienti">
+                        <i class="fas fa-book"></i> Ingredienti
+                    </a>
                 </div>
                 <div class="input-group">
                     <div class="form-row">
@@ -79,10 +83,7 @@
 
             <!-- Sezione Ingredienti Aggiunti -->
             <section class="ingredients-list-section hidden" id="ingredients-list-section">
-                <div class="section-header-with-flavor">
-                    <h2>Ingredienti nella ricetta</h2>
-                    <span class="flavor-badge" id="flavor-badge-list"></span>
-                </div>
+                <h2><i class="fas fa-list-ul"></i> Ingredienti nella ricetta</h2>
                 <div id="ingredients-list" class="ingredients-list">
                     <p class="empty-message">Nessun ingrediente aggiunto. Inizia aggiungendo degli ingredienti!</p>
                 </div>
@@ -90,16 +91,12 @@
 
             <!-- Sezione Risultati -->
             <section class="results-section hidden" id="results-section">
-                <div class="section-header-with-flavor">
-                    <h2>Analisi nutrizionale e proprietà del geleato</h2>
-                    <span class="flavor-badge" id="flavor-badge-results"></span>
-                </div>
+                <h2><i class="fas fa-chart-pie"></i> Analisi nutrizionale e proprietà del gelato</h2>
                 
                 <div class="results-grid">
                     <!-- Peso Totale -->
                     <div class="result-card highlight">
-                        <h3>Composizione ricetta</h3>
-                        <div class="weight-display" id="total-weight-display">0 g</div>
+                        <h3>Composizione ricetta - <span id="total-weight-display">0 g</span></h3>
                         <div class="ingredients-blocks" id="ingredients-blocks"></div>
                     </div>
 
@@ -181,17 +178,16 @@
                     </div>
                 </div>
 
-                <div class="generate-label-action">
-                    <button id="generate-label-btn" class="btn-success"><i class="fas fa-check"></i> Conferma ricetta e genera etichetta</button>
+                <div class="generate-label-action" style="display: flex; gap: 15px; justify-content: center;">
+                    <button id="save-recipe-btn" class="btn-success"><i class="fas fa-save"></i> Salva Ricetta</button>
+                    <button id="print-recipe-btn" class="btn-secondary"><i class="fas fa-receipt"></i> Stampa Ricetta</button>
+                    <button id="print-label-btn" class="btn-primary"><i class="fas fa-print"></i> Stampa Etichetta</button>
                 </div>
             </section>
 
             <!-- Sezione Etichetta Stampabile -->
             <section class="print-section hidden" id="print-section">
-                <div class="section-header-with-flavor">
-                    <h2>Etichetta Prodotto</h2>
-                    <span class="flavor-badge" id="flavor-badge-print"></span>
-                </div>
+                <h2><i class="fas fa-tag"></i> Etichetta Prodotto</h2>
                 <div id="label-container" class="label-container hidden">
                     <div class="label-content">
                         <div class="label-header">
@@ -254,11 +250,50 @@
                 </div>
             </section>
 
+            <!-- Sezione Ricetta Stampabile -->
+            <section class="recipe-print-section hidden" id="recipe-print-section">
+                <h2><i class="fas fa-receipt"></i> Ricetta</h2>
+                <div id="recipe-container" class="recipe-container hidden">
+                    <div class="recipe-content">
+                        <div class="recipe-print-header">
+                            <img src="imgs/logo.jpg" alt="Logo Fiori Celesti" class="recipe-print-logo">
+                            <div>
+                                <h3>Fiori Celesti</h3>
+                                <h4 class="recipe-print-flavor-name" id="recipe-flavor-name">Gelato Artigianale</h4>
+                            </div>
+                        </div>
+
+                        <div class="recipe-section">
+                            <h4>Ingredienti</h4>
+                            <table class="recipe-ingredients-table" id="recipe-ingredients-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ingrediente</th>
+                                        <th>Quantità</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recipe-ingredients-body">
+                                </tbody>
+                            </table>
+                            <p class="recipe-total">Peso totale: <strong id="recipe-total-weight">0 g</strong></p>
+                        </div>
+
+                        <div class="recipe-footer">
+                            <p>Ricetta creata con Gelato Fiori Celesti</p>
+                        </div>
+
+                        <button id="print-recipe-final-btn" class="btn-secondary" onclick="window.print()">🖨️ Stampa Ricetta</button>
+                    </div>
+                </div>
+            </section>
+
             <!-- Sezione Cronologia -->
             <section class="history-section hidden" id="history-section">
                 <div class="history-header" id="history-header">
                     <h2><i class="fas fa-history"></i> Ricette recenti</h2>
-                    <i class="fas fa-chevron-down history-toggle-icon" id="history-toggle-icon"></i>
+                    <a href="ricettario.html" class="btn-secondary" style="font-size: 0.9rem; padding: 8px 15px;">
+                        <i class="fas fa-book-open"></i> Vedi tutte
+                    </a>
                 </div>
                 <div id="history-list" class="history-list">
                     <p class="empty-message">Nessuna ricetta salvata ancora.</p>

@@ -10,6 +10,7 @@
 
 const ingredientsDB = {
   "Acqua": { water: 100.0, sugars: 0.0, fats: 0.0, proteins: 0.0, otherSolids: 0.0, pod: 0.0, pac: 0.0 },
+  "Addensante (Agar Agar)": { water: 5.0, sugars: 0.0, fats: 0.0, proteins: 0.0, otherSolids: 95.0, pod: 0.0, pac: 0.0 },
   "Albicocca": { water: 84.0, sugars: 12.0, fats: 0.0, proteins: 0.0, otherSolids: 4.0, pod: 14.4, pac: 17.4 },
   "Amarena": { water: 85.0, sugars: 11.0, fats: 0.0, proteins: 0.0, otherSolids: 4.0, pod: 13.2, pac: 16.0 },
   "Ananas": { water: 87.0, sugars: 11.0, fats: 0.0, proteins: 0.0, otherSolids: 2.0, pod: 13.2, pac: 16.0 },

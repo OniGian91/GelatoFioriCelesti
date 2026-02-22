@@ -180,6 +180,11 @@ h2 {
     padding-bottom: 10px;
 }
 
+h2 i {
+    margin-right: 10px;
+    color: var(--primary-color);
+}
+
 /* Form Styles */
 .form-row {
     display: flex;
@@ -213,7 +218,10 @@ select:focus, input[type="number"]:focus {
 }
 
 /* Buttons */
-button {
+button,
+a.btn-primary,
+a.btn-secondary,
+a.btn-success {
     padding: 12px 24px;
     border: none;
     border-radius: 8px;
@@ -221,6 +229,7 @@ button {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
+    text-decoration: none;
 }
 
 .btn-primary {
@@ -241,6 +250,10 @@ button {
 .btn-secondary {
     background: var(--secondary-color);
     color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
 .btn-secondary:hover {
@@ -299,6 +312,28 @@ button {
     transform: translateY(-2px);
 }
 
+.btn-warning {
+    background: #f39c12;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    border-radius: 8px;
+}
+
+.btn-warning:hover {
+    background: #e67e22;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+}
+
+.btn-small {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
 /* Section Header */
 .section-header {
     display: flex;
@@ -308,6 +343,17 @@ button {
 }
 
 .section-header h2 {
+    margin-bottom: 0;
+}
+
+.section-header-with-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-header-with-link h2 {
     margin-bottom: 0;
 }
 
@@ -425,20 +471,44 @@ button {
     color: white;
     border: none;
     border-radius: 4px;
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     transition: all 0.2s;
     z-index: 10;
 }
 
 .history-delete-btn:hover {
     background: #c0392b;
-    transform: scale(1.1);
+    transform: scale(1.15);
+}
+
+.history-load-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 64px;
+    background: rgba(39, 174, 96, 0.9);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+.history-load-btn:hover {
+    background: #229954;
+    transform: scale(1.15);
 }
 
 /* Preparation Section */
@@ -629,7 +699,6 @@ button {
 /* Results Grid */
 .results-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
 }
 
@@ -743,8 +812,8 @@ button {
 
 /* Macronutrienti e Proprietà */
 .macro-grid, .properties-grid {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
 }
 
@@ -904,6 +973,117 @@ button {
     width: 200px;
 }
 
+/* Recipe Print Styles */
+.recipe-container {
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+.recipe-container.hidden {
+    display: none;
+}
+
+.recipe-content {
+    background: white;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 30px;
+    max-width: 800px;
+    margin: 0 auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.recipe-print-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.recipe-print-logo {
+    max-width: 60px;
+    height: auto;
+    border-radius: 5px;
+}
+
+.recipe-print-header h3 {
+    font-size: 1.5rem;
+    margin: 0;
+    color: var(--text-color);
+}
+
+.recipe-print-flavor-name {
+    font-size: 1.3rem;
+    color: var(--primary-color);
+    margin: 5px 0 0 0;
+    font-weight: 700;
+}
+
+.recipe-section {
+    margin-bottom: 25px;
+}
+
+.recipe-section h4 {
+    font-size: 1.2rem;
+    color: var(--text-color);
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.recipe-ingredients-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+}
+
+.recipe-ingredients-table thead {
+    background: var(--primary-color);
+    color: white;
+}
+
+.recipe-ingredients-table th {
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.recipe-ingredients-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.recipe-ingredients-table tbody tr:last-child td {
+    border-bottom: 2px solid var(--text-color);
+}
+
+.recipe-ingredients-table tbody tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+.recipe-total {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    text-align: right;
+    margin-top: 10px;
+}
+
+.recipe-footer {
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    text-align: center;
+}
+
+#print-recipe-final-btn {
+    display: block;
+    margin: 20px auto 0;
+    width: 200px;
+}
+
 /* Footer */
 footer {
     background: var(--text-color);
@@ -1009,6 +1189,10 @@ footer {
     .results-grid {
         grid-template-columns: 1fr;
     }
+
+    .macro-grid, .properties-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Print Styles */
@@ -1029,24 +1213,30 @@ footer {
     .ingredients-list-section, 
     .results-section,
     .section-header,
+    .section-header-with-flavor,
     #print-btn,
+    #print-recipe-final-btn,
+    .history-section,
     footer {
         display: none !important;
     }
 
-    .print-section {
+    .print-section,
+    .recipe-print-section {
         box-shadow: none;
         padding: 0;
         margin: 0;
     }
 
-    .label-content {
+    .label-content,
+    .recipe-content {
         border: 2px solid #000;
         box-shadow: none;
         page-break-inside: avoid;
     }
 
-    .label-container {
+    .label-container,
+    .recipe-container {
         display: block !important;
     }
 }

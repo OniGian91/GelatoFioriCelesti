@@ -16,6 +16,8 @@ function init() {
     hideWorkingSections();
     // Controlla se c'è un utente salvato
     checkSavedUser();
+    // Controlla se c'è una ricetta da caricare
+    checkRecipeToLoad();
 }
 
 // Popola il select con gli ingredienti
@@ -34,12 +36,13 @@ function populateIngredientSelect() {
 // Setup degli event listeners
 function setupEventListeners() {
     document.getElementById('add-btn').addEventListener('click', addIngredient);
+    document.getElementById('save-recipe-btn').addEventListener('click', saveRecipe);
+    document.getElementById('print-recipe-btn').addEventListener('click', showPrintRecipe);
+    document.getElementById('print-label-btn').addEventListener('click', showPrintLabel);
     document.getElementById('clear-btn').addEventListener('click', clearRecipe);
-    document.getElementById('generate-label-btn').addEventListener('click', generateLabel);
     document.getElementById('confirm-flavor-btn').addEventListener('click', confirmFlavorName);
     document.getElementById('login-btn').addEventListener('click', handleLogin);
     document.getElementById('logout-btn').addEventListener('click', handleLogout);
-    document.getElementById('history-header').addEventListener('click', toggleHistorySection);
     document.getElementById('edit-flavor-btn').addEventListener('click', editFlavorName);
     
     // Permetti di premere Enter per fare login
@@ -110,6 +113,9 @@ function handleLogin() {
     
     // Mostra le info utente
     document.getElementById('username-display').textContent = username;
+    const userIcon = document.querySelector('.user-icon');
+    userIcon.src = `imgs/${username}.png`;
+    userIcon.onerror = function() { this.src = 'imgs/logged_user.png'; };
     document.getElementById('user-info').classList.remove('hidden');
     
     // Mostra il contenuto principale
@@ -139,6 +145,9 @@ function checkSavedUser() {
         // Utente già loggato, ripristina la sessione
         currentUser = savedUsername;
         document.getElementById('username-display').textContent = savedUsername;
+        const userIcon = document.querySelector('.user-icon');
+        userIcon.src = `imgs/${savedUsername}.png`;
+        userIcon.onerror = function() { this.src = 'imgs/logged_user.png'; };
         document.getElementById('login-form').classList.add('hidden');
         document.getElementById('user-info').classList.remove('hidden');
         showMainContent();
@@ -147,6 +156,65 @@ function checkSavedUser() {
     } else {
         // Nessun utente salvato, nascondi il contenuto principale
         hideMainContent();
+    }
+}
+
+// Controlla se c'è una ricetta da caricare dal ricettario
+function checkRecipeToLoad() {
+    const recipeToLoad = localStorage.getItem('gelatoRecipeToLoad');
+    
+    if (recipeToLoad) {
+        try {
+            const data = JSON.parse(recipeToLoad);
+            
+            // Se c'è un utente associato alla ricetta e non c'è utente loggato, fai login
+            if (data.userName && !currentUser) {
+                currentUser = data.userName;
+                localStorage.setItem('gelatoUserName', data.userName);
+                document.getElementById('username-display').textContent = data.userName;
+                document.getElementById('login-form').classList.add('hidden');
+                document.getElementById('user-info').classList.remove('hidden');
+                showMainContent();
+                showHistorySection();
+            }
+            
+            // Carica il nome del gusto
+            flavorName = data.flavorName;
+            document.getElementById('flavor-name-input').value = flavorName;
+            
+            // Conferma automaticamente il gusto
+            isFlavorConfirmed = true;
+            document.getElementById('flavor-name-form').classList.add('hidden');
+            document.getElementById('preparation-header').classList.remove('hidden');
+            document.getElementById('flavor-label-display').textContent = flavorName;
+            
+            // Mostra le sezioni di lavoro
+            showWorkingSections();
+            
+            // Carica gli ingredienti
+            recipe = data.recipe.map(item => ({
+                ...item,
+                id: Date.now() + Math.random() // Nuovo ID univoco
+            }));
+            
+            // Aggiorna la visualizzazione
+            updateDisplay();
+            
+            // Rimuovi la ricetta da caricare
+            localStorage.removeItem('gelatoRecipeToLoad');
+            
+            // Scorri verso la lista ingredienti
+            setTimeout(() => {
+                document.getElementById('ingredients-list-section').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }, 300);
+            
+        } catch (error) {
+            console.error('Errore nel caricamento della ricetta:', error);
+            localStorage.removeItem('gelatoRecipeToLoad');
+        }
     }
 }
 
@@ -195,9 +263,6 @@ function confirmFlavorName() {
     
     // Mostra le sezioni di lavoro
     showWorkingSections();
-    
-    // Aggiorna i badge del gusto
-    updateFlavorBadges();
 }
 
 // Modifica il nome del gusto
@@ -210,13 +275,10 @@ function editFlavorName() {
         // Aggiorna il display del nome
         document.getElementById('flavor-label-display').textContent = flavorName;
         
-        // Aggiorna tutti i badge
-        updateFlavorBadges();
-        
         // Se l'etichetta è già stata generata, aggiorna anche quella
         const labelFlavorName = document.getElementById('label-flavor-name');
         if (labelFlavorName) {
-            labelFlavorName.textContent = flavorName;
+            labelFlavorName.textContent = `Gelato al gusto ${flavorName.toLowerCase()}`;
         }
     }
 }
@@ -237,12 +299,15 @@ function showWorkingSections() {
 }
 
 // Aggiorna i badge del gusto in tutte le sezioni
+// NOTA: Funzione deprecata - i flavor-badge sono stati rimossi dall'interfaccia
+/*
 function updateFlavorBadges() {
     const badges = ['flavor-badge-add', 'flavor-badge-list', 'flavor-badge-results', 'flavor-badge-print'];
     badges.forEach(id => {
         document.getElementById(id).textContent = flavorName;
     });
 }
+*/
 
 // Aggiungi un ingrediente alla ricetta
 function addIngredient() {
@@ -325,10 +390,10 @@ function updateIngredientsList() {
                         type="number" 
                         value="${item.weight}" 
                         min="0" 
-                        step="0.1"
+                        step="1"
                         onchange="updateWeight(${item.id}, this.value)"
                     />
-                    <span>g</span>
+                    <span>grammi</span>
                 </div>
                 <button class="btn-info" onclick="showIngredientModal('${item.name.replace(/'/g, "\\'")}')" title="Visualizza dati ingrediente"><i class="fas fa-info-circle"></i></button>
                 <button class="btn-danger" onclick="removeIngredient(${item.id})" title="Rimuovi ingrediente"><i class="fas fa-trash-alt"></i></button>
@@ -382,7 +447,8 @@ function updateResults() {
     const totals = calculateTotals();
     
     // Peso totale
-    document.getElementById('total-weight-display').textContent = `${totals.totalWeight.toFixed(1)} g`;
+    const weightKg = (totals.totalWeight / 1000).toFixed(3);
+    document.getElementById('total-weight-display').textContent = `${totals.totalWeight.toFixed(1)} g (${weightKg} kg)`;
     
     // Aggiorna i blocchi degli ingredienti  
     updateIngredientsBlocks();
@@ -494,7 +560,153 @@ function getFatsStatus(percent) {
     }
 }
 
-// Genera etichetta per stampa
+// Salva la ricetta (con controllo sovrascrittura)
+function saveRecipe() {
+    if (recipe.length === 0) {
+        alert('Aggiungi almeno un ingrediente prima di salvare la ricetta!');
+        return;
+    }
+
+    // Recupera l'history esistente
+    let history = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
+    
+    // Controlla se esiste già una ricetta con lo stesso nome
+    const existingIndex = history.findIndex(entry => 
+        entry.flavorName.toLowerCase() === flavorName.toLowerCase()
+    );
+    
+    if (existingIndex !== -1) {
+        // Ricetta esistente, chiedi conferma per sovrascrivere
+        if (!confirm(`Esiste già una ricetta con il nome "${flavorName}". Vuoi sovrascriverla?`)) {
+            return;
+        }
+        // Rimuovi la ricetta esistente
+        history.splice(existingIndex, 1);
+    }
+    
+    // Crea la nuova entry
+    const historyEntry = {
+        flavorName: flavorName,
+        userName: currentUser,
+        date: Date.now(),
+        recipe: JSON.parse(JSON.stringify(recipe)) // Deep copy
+    };
+    
+    // Aggiungi la nuova ricetta all'inizio
+    history.unshift(historyEntry);
+    
+    // Mantieni solo le ultime 10
+    history = history.slice(0, 10);
+    
+    // Salva nell'localStorage
+    localStorage.setItem('gelatoHistory', JSON.stringify(history));
+    
+    // Aggiorna la visualizzazione della history
+    updateHistoryDisplay();
+    
+    // Mostra messaggio di successo
+    alert(`Ricetta "${flavorName}" salvata con successo!`);
+}
+
+// Mostra l'etichetta per la stampa
+function showPrintLabel() {
+    if (recipe.length === 0) {
+        alert('Aggiungi almeno un ingrediente prima di stampare l\'etichetta!');
+        return;
+    }
+    
+    const totals = calculateTotals();
+    const labelContainer = document.getElementById('label-container');
+    const printSection = document.getElementById('print-section');
+    const recipePrintSection = document.getElementById('recipe-print-section');
+    
+    // Nascondi la sezione ricetta
+    recipePrintSection.classList.add('hidden');
+    
+    // Mostra la sezione etichetta e il container
+    printSection.classList.remove('hidden');
+    labelContainer.classList.remove('hidden');
+    
+    // Aggiorna il nome del gusto nell'etichetta
+    document.getElementById('label-flavor-name').textContent = flavorName;
+    
+    // Ordina gli ingredienti per peso (dal più presente al meno)
+    const sortedIngredients = [...recipe].sort((a, b) => b.weight - a.weight);
+    
+    // Genera la lista degli ingredienti
+    const ingredientsList = sortedIngredients.map(item => item.name).join(', ').toLowerCase();
+    document.getElementById('label-ingredients').textContent = ingredientsList + '.';
+    
+    // Calcola valori nutrizionali per 100g
+    const water100g = totals.totalWeight > 0 ? (totals.water / totals.totalWeight) * 100 : 0;
+    const sugars100g = totals.totalWeight > 0 ? (totals.sugars / totals.totalWeight) * 100 : 0;
+    const fats100g = totals.totalWeight > 0 ? (totals.fats / totals.totalWeight) * 100 : 0;
+    const proteins100g = totals.totalWeight > 0 ? (totals.proteins / totals.totalWeight) * 100 : 0;
+    const otherSolids100g = totals.totalWeight > 0 ? (totals.otherSolids / totals.totalWeight) * 100 : 0;
+    
+    // Calcola carboidrati totali (zuccheri + altri carboidrati approssimativi)
+    const carbs100g = sugars100g; // Per gelato, la maggior parte dei carboidrati sono zuccheri
+    
+    // Calcola energia (kcal per 100g)
+    // Grassi: 9 kcal/g, Carboidrati: 4 kcal/g, Proteine: 4 kcal/g
+    const kcal = (fats100g * 9) + (carbs100g * 4) + (proteins100g * 4);
+    const kj = kcal * 4.184; // Conversione kcal a kJ
+    
+    // Popola la tabella nutrizionale
+    document.getElementById('label-energy').textContent = `${Math.round(kj)} kJ / ${Math.round(kcal)} kcal`;
+    document.getElementById('label-fats').textContent = `${fats100g.toFixed(1)} g`;
+    document.getElementById('label-saturated').textContent = `${(fats100g * 0.6).toFixed(1)} g`; // Stima ~60% saturi
+    document.getElementById('label-carbs').textContent = `${carbs100g.toFixed(1)} g`;
+    document.getElementById('label-sugars').textContent = `${sugars100g.toFixed(1)} g`;
+    document.getElementById('label-proteins').textContent = `${proteins100g.toFixed(1)} g`;
+    
+    // Scroll verso l'etichetta
+    labelContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Mostra la ricetta per la stampa
+function showPrintRecipe() {
+    if (recipe.length === 0) {
+        alert('Aggiungi almeno un ingrediente prima di stampare la ricetta!');
+        return;
+    }
+    
+    const totals = calculateTotals();
+    const recipeContainer = document.getElementById('recipe-container');
+    const recipePrintSection = document.getElementById('recipe-print-section');
+    const printSection = document.getElementById('print-section');
+    
+    // Nascondi la sezione etichetta
+    printSection.classList.add('hidden');
+    
+    // Mostra la sezione ricetta e il container
+    recipePrintSection.classList.remove('hidden');
+    recipeContainer.classList.remove('hidden');
+    
+    // Aggiorna il nome del gusto nella ricetta
+    document.getElementById('recipe-flavor-name').textContent = flavorName;
+    
+    // Ordina gli ingredienti per peso (dal più presente al meno)
+    const sortedIngredients = [...recipe].sort((a, b) => b.weight - a.weight);
+    
+    // Genera la tabella degli ingredienti
+    const ingredientsBody = document.getElementById('recipe-ingredients-body');
+    ingredientsBody.innerHTML = sortedIngredients.map(item => `
+        <tr>
+            <td>${item.name}</td>
+            <td>${item.weight} g</td>
+        </tr>
+    `).join('');
+    
+    // Aggiorna il peso totale
+    const weightKg = (totals.totalWeight / 1000).toFixed(3);
+    document.getElementById('recipe-total-weight').textContent = `${totals.totalWeight.toFixed(1)} g (${weightKg} kg)`;
+    
+    // Scroll verso la ricetta
+    recipeContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Genera etichetta (legacy - manteniamo per compatibilità)
 function generateLabel() {
     if (recipe.length === 0) {
         alert('Aggiungi almeno un ingrediente prima di generare l\'etichetta!');
@@ -614,7 +826,10 @@ function updateHistoryDisplay() {
         return;
     }
     
-    historyList.innerHTML = history.map((entry, index) => {
+    // Mostra solo le prime 6 ricette
+    const recentHistory = history.slice(0, 6);
+    
+    historyList.innerHTML = recentHistory.map((entry, index) => {
         const date = new Date(entry.date);
         const dateStr = date.toLocaleDateString('it-IT', { 
             day: '2-digit', 
@@ -628,7 +843,10 @@ function updateHistoryDisplay() {
         const moreCount = entry.recipe.length > 3 ? ` +${entry.recipe.length - 3}` : '';
         
         return `
-            <div class="history-item" onclick="loadFromHistory(${index})">
+            <div class="history-item">
+                <button class="history-load-btn" onclick="loadFromHistory(${index})" title="Carica questa ricetta">
+                    <i class="fas fa-blender"></i>
+                </button>
                 <button class="history-delete-btn" onclick="deleteFromHistory(${index}, event)" title="Elimina ricetta">
                     <i class="fas fa-trash"></i>
                 </button>
@@ -676,11 +894,9 @@ function loadFromHistory(index) {
             document.getElementById('preparation-header').classList.remove('hidden');
             document.getElementById('flavor-label-display').textContent = flavorName;
             showWorkingSections();
-            updateFlavorBadges();
         } else {
             // Altrimenti aggiorna solo il nome
             document.getElementById('flavor-label-display').textContent = flavorName;
-            updateFlavorBadges();
         }
         
         // Aggiorna la visualizzazione
