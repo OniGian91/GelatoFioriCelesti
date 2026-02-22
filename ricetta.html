@@ -381,7 +381,7 @@
             <div class="ice-cream-loader">
                 <i class="fas fa-ice-cream fa-4x"></i>
             </div>
-            <h2 class="loader-text">Caricamento ricetta...</h2>
+            <h2 class="loader-text" id="loader-text">Caricamento ricetta...</h2>
             <div class="loader-bar">
                 <div class="loader-progress"></div>
             </div>
@@ -697,7 +697,7 @@
 
             document.getElementById('recipe-metadata').innerHTML = `
                 <div class="recipe-metadata-item">
-                    <img src="imgs/${recipe.userName}.png" onerror="this.src='imgs/logged_user.png'" alt="${recipe.userName}">
+                    <img src="imgs/${recipe.userName.toLowerCase()}.png" onerror="this.src='imgs/logged_user.png'" alt="${recipe.userName}">
                     <span>${recipe.userName}</span>
                 </div>
                 <div class="recipe-metadata-item">
@@ -1272,6 +1272,16 @@
     </div>
 
     <script>
+        // Aggiorna il testo del loader con il nome della ricetta
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const recipeName = urlParams.get('name');
+            if (recipeName) {
+                const loaderText = document.getElementById('loader-text');
+                loaderText.textContent = `Caricamento "${decodeURIComponent(recipeName)}"...`;
+            }
+        })();
+
         window.addEventListener('load', function() {
             const loader = document.getElementById('page-loader');
             const loaderProgress = document.querySelector('.loader-progress');

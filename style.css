@@ -1548,6 +1548,28 @@ footer {
     }
 }
 
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(400px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(400px);
+    }
+}
+
 .loader-text {
     font-size: 1.5rem;
     margin-bottom: 30px;
@@ -1590,4 +1612,73 @@ footer {
         align-items: flex-start;
         gap: 5px;
     }
+}
+
+/* Notifica ingrediente aggiunto */
+.ingredient-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    z-index: 10000;
+    opacity: 0;
+    transform: translateX(400px);
+    transition: all 0.3s ease;
+}
+
+.ingredient-notification.remove {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.ingredient-notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.ingredient-notification i {
+    font-size: 1.2rem;
+}
+
+/* Modal conferma personalizzato */
+.confirm-modal-content {
+    max-width: 500px;
+    text-align: center;
+}
+
+.confirm-modal-content h2 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.confirm-modal-content h2 i {
+    color: var(--secondary-color);
+}
+
+.confirm-modal-content p {
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.confirm-modal-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.confirm-modal-buttons button {
+    min-width: 120px;
+    padding: 12px 25px;
 }

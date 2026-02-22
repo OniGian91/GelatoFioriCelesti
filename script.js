@@ -49,15 +49,20 @@ function setupEventListeners() {
     // Event listener per il pulsante "Torna alla Home"
     const backToHomeBtn = document.getElementById('back-to-home-btn');
     if (backToHomeBtn) {
-        backToHomeBtn.addEventListener('click', (e) => {
+        backToHomeBtn.addEventListener('click', async (e) => {
+            e.preventDefault(); // Previeni navigazione di default
+            
             // Controlla se c'è lavoro in corso
             if (isFlavorConfirmed || recipe.length > 0) {
-                if (confirm('Hai una preparazione in corso. Se torni alla home, perderai tutti i dati non salvati. Continuare?')) {
-                    // L'utente ha confermato, permetti la navigazione senza ulteriori conferme
+                const confirmed = await showConfirmModal('Hai una preparazione in corso. Se torni alla home, perderai tutti i dati non salvati. Continuare?');
+                if (confirmed) {
+                    // L'utente ha confermato, permetti la navigazione
                     allowNavigation = true;
-                } else {
-                    e.preventDefault(); // Blocca la navigazione
+                    window.location.href = 'index.html';
                 }
+            } else {
+                // Nessun dato da salvare, vai direttamente
+                window.location.href = 'index.html';
             }
         });
     }
@@ -112,7 +117,23 @@ function setupEventListeners() {
         }
     });
     
-    // Previeni la chiusura/ricarica della pagina se ci sono dati non salvati
+    // Intercetta F5 (refresh) e Ctrl+R per mostrare modal personalizzato
+    window.addEventListener('keydown', async (e) => {
+        // F5 o Ctrl+R (o Cmd+R su Mac)
+        if (e.key === 'F5' || (e.key === 'r' && (e.ctrlKey || e.metaKey))) {
+            // Solo se ci sono dati da salvare
+            if (isFlavorConfirmed || recipe.length > 0) {
+                e.preventDefault();
+                const confirmed = await showConfirmModal('Vuoi ricaricare la pagina? Tutti i dati non salvati verranno persi.');
+                if (confirmed) {
+                    allowNavigation = true;
+                    location.reload();
+                }
+            }
+        }
+    });
+    
+    // Previeni la chiusura della pagina se ci sono dati non salvati
     window.addEventListener('beforeunload', (e) => {
         // Non mostrare la conferma se l'utente ha già confermato la navigazione
         if (allowNavigation) {
@@ -152,7 +173,7 @@ function handleLogin() {
     // Mostra le info utente
     document.getElementById('username-display').textContent = capitalizedUsername;
     const userIcon = document.querySelector('.user-icon');
-    userIcon.src = `imgs/${capitalizedUsername}.png`;
+    userIcon.src = `imgs/${capitalizedUsername.toLowerCase()}.png`;
     userIcon.onerror = function() { this.src = 'imgs/logged_user.png'; };
     document.getElementById('user-info').classList.remove('hidden');
     
@@ -184,7 +205,7 @@ function checkSavedUser() {
         currentUser = savedUsername;
         document.getElementById('username-display').textContent = savedUsername;
         const userIcon = document.querySelector('.user-icon');
-        userIcon.src = `imgs/${savedUsername}.png`;
+        userIcon.src = `imgs/${savedUsername.toLowerCase()}.png`;
         userIcon.onerror = function() { this.src = 'imgs/logged_user.png'; };
         document.getElementById('login-form').classList.add('hidden');
         document.getElementById('user-info').classList.remove('hidden');
@@ -339,6 +360,48 @@ function updateFlavorBadges() {
 }
 */
 
+// Funzione per riprodurre il beep usando Web Audio API
+function playBeep(frequency = 800) {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = frequency; // Frequenza in Hz
+        oscillator.type = 'sine'; // Tipo di onda
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.15);
+    } catch (err) {
+        console.log('Audio play failed:', err);
+    }
+}
+
+// Funzione per mostrare notifica di conferma
+function showConfirmation(message, type = 'success') {
+    // Crea elemento notifica
+    const notification = document.createElement('div');
+    notification.className = `ingredient-notification ${type}`;
+    const icon = type === 'success' ? 'fa-check-circle' : 'fa-trash';
+    notification.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+    document.body.appendChild(notification);
+    
+    // Mostra notifica con animazione
+    setTimeout(() => notification.classList.add('show'), 10);
+    
+    // Rimuovi dopo 2 secondi
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+    }, 2000);
+}
+
 // Aggiungi un ingrediente alla ricetta
 function addIngredient() {
     const select = document.getElementById('ingredient-select');
@@ -364,6 +427,12 @@ function addIngredient() {
         weight: weight
     });
     
+    // Riproduci suono
+    playBeep();
+    
+    // Mostra notifica
+    showConfirmation(`${ingredientName} aggiunto (${weight}g)`);
+    
     // Reset degli input
     select.value = '';
     weightInput.value = '';
@@ -374,6 +443,12 @@ function addIngredient() {
 
 // Rimuovi un ingrediente dalla ricetta
 function removeIngredient(id) {
+    const item = recipe.find(item => item.id === id);
+    if (item) {
+        // Riproduci beep più basso per rimozione
+        playBeep(400);
+        showConfirmation(`${item.name} rimosso`, 'remove');
+    }
     recipe = recipe.filter(item => item.id !== id);
     updateDisplay();
 }
@@ -388,11 +463,37 @@ function updateWeight(id, newWeight) {
 }
 
 // Pulisci la ricetta e ricarica la pagina
-function clearRecipe() {
-    if (confirm('Vuoi iniziare una nuova preparazione? Tutti i dati verranno persi.')) {
-        // Ricarica la pagina per ricominciare da zero
-        location.reload();
+async function clearRecipe() {
+    const confirmed = await showConfirmModal('Vuoi iniziare una nuova preparazione? Tutti i dati verranno persi.');
+    if (confirmed) {
+        // Reset dell'applicazione senza ricaricare la pagina
+        resetApplication();
     }
+}
+
+// Reset completo dell'applicazione
+function resetApplication() {
+    // Reset variabili globali
+    recipe = [];
+    flavorName = 'Gelato Artigianale';
+    isFlavorConfirmed = false;
+    
+    // Reset del form nome gusto
+    document.getElementById('flavor-name-input').value = '';
+    document.getElementById('flavor-label-display').textContent = 'Gelato Artigianale';
+    
+    // Mostra il form, nascondi l'header
+    document.getElementById('flavor-name-form').classList.remove('hidden');
+    document.getElementById('preparation-header').classList.add('hidden');
+    
+    // Nascondi le sezioni di lavoro
+    hideWorkingSections();
+    
+    // Aggiorna il display (svuota liste e risultati)
+    updateDisplay();
+    
+    // Focus sul campo nome
+    document.getElementById('flavor-name-input').focus();
 }
 
 // Aggiorna tutta la visualizzazione
@@ -593,8 +694,49 @@ function getFatsStatus(percent) {
     }
 }
 
+// Funzione per mostrare modal di conferma personalizzato
+function showConfirmModal(message) {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('confirm-modal');
+        const messageEl = document.getElementById('confirm-modal-message');
+        const confirmBtn = document.getElementById('confirm-modal-confirm');
+        const cancelBtn = document.getElementById('confirm-modal-cancel');
+        
+        messageEl.textContent = message;
+        modal.style.display = 'block';
+        
+        const handleConfirm = () => {
+            modal.style.display = 'none';
+            cleanup();
+            resolve(true);
+        };
+        
+        const handleCancel = () => {
+            modal.style.display = 'none';
+            cleanup();
+            resolve(false);
+        };
+        
+        const cleanup = () => {
+            confirmBtn.removeEventListener('click', handleConfirm);
+            cancelBtn.removeEventListener('click', handleCancel);
+            modal.removeEventListener('click', handleOutsideClick);
+        };
+        
+        const handleOutsideClick = (e) => {
+            if (e.target === modal) {
+                handleCancel();
+            }
+        };
+        
+        confirmBtn.addEventListener('click', handleConfirm);
+        cancelBtn.addEventListener('click', handleCancel);
+        modal.addEventListener('click', handleOutsideClick);
+    });
+}
+
 // Salva la ricetta (con controllo sovrascrittura)
-function saveRecipe() {
+async function saveRecipe() {
     if (recipe.length === 0) {
         alert('Aggiungi almeno un ingrediente prima di salvare la ricetta!');
         return;
@@ -610,7 +752,8 @@ function saveRecipe() {
     
     if (existingIndex !== -1) {
         // Ricetta esistente, chiedi conferma per sovrascrivere
-        if (!confirm(`Esiste già una ricetta con il nome "${flavorName}". Vuoi sovrascriverla?`)) {
+        const confirmed = await showConfirmModal(`Esiste già una ricetta con il nome "${flavorName}". Vuoi sovrascriverla?`);
+        if (!confirmed) {
             return;
         }
         // Rimuovi la ricetta esistente
@@ -634,11 +777,14 @@ function saveRecipe() {
     // Salva nell'localStorage
     localStorage.setItem('gelatoHistory', JSON.stringify(history));
     
+    // Riproduci suono di conferma
+    playBeep(1000);
+    
+    // Mostra notifica di successo
+    showConfirmation(`Ricetta "${flavorName}" salvata con successo!`);
+    
     // Aggiorna la visualizzazione della history
     updateHistoryDisplay();
-    
-    // Mostra messaggio di successo
-    alert(`Ricetta "${flavorName}" salvata con successo!`);
 }
 
 // Mostra l'etichetta per la stampa
@@ -937,7 +1083,7 @@ function updateHistoryDisplay() {
                     </div>
                     <div class="history-meta">
                         <div class="history-meta-item">
-                            <img src="imgs/${entry.userName}.png" onerror="this.src='imgs/logged_user.png'" class="history-user-avatar" alt="${entry.userName}">
+                            <img src="imgs/${entry.userName.toLowerCase()}.png" onerror="this.src='imgs/logged_user.png'" class="history-user-avatar" alt="${entry.userName}">
                             ${entry.userName}
                         </div>
                         <div class="history-meta-item">
@@ -1026,7 +1172,7 @@ function renameRecipeFromHistory(index) {
 }
 
 // Elimina una ricetta dall'history
-function deleteFromHistory(index, event) {
+async function deleteFromHistory(index, event) {
     event.stopPropagation(); // Previene il click sulla card
     
     const history = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
@@ -1037,10 +1183,16 @@ function deleteFromHistory(index, event) {
         return;
     }
     
-    if (confirm(`Vuoi eliminare la ricetta "${entry.flavorName}" dall'archivio?`)) {
+    const confirmed = await showConfirmModal(`Vuoi eliminare la ricetta "${entry.flavorName}" dall'archivio?`);
+    if (confirmed) {
         history.splice(index, 1);
         localStorage.setItem('gelatoHistory', JSON.stringify(history));
+        
+        // Riproduci suono di eliminazione
+        playBeep(400);
+        
         updateHistoryDisplay();
+        showConfirmation(`Ricetta "${entry.flavorName}" eliminata`, 'remove');
     }
 }
 

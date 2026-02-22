@@ -267,6 +267,22 @@
         </div>
     </div>
 
+    <!-- Modal conferma eliminazione -->
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content confirm-modal-content">
+            <h2 id="confirm-modal-title"><i class="fas fa-exclamation-circle"></i> Conferma</h2>
+            <p id="confirm-modal-message"></p>
+            <div class="confirm-modal-buttons">
+                <button id="confirm-modal-cancel" class="btn-secondary">
+                    <i class="fas fa-times"></i> Annulla
+                </button>
+                <button id="confirm-modal-confirm" class="btn-primary">
+                    <i class="fas fa-check"></i> Conferma
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="ingredientsDB.js"></script>
     <script src="script.js"></script>
     <script>
@@ -289,7 +305,7 @@
             document.getElementById('login-form').classList.add('hidden');
             document.getElementById('username-display').textContent = capitalizedUsername;
             const userIcon = document.querySelector('.user-icon');
-            userIcon.src = `imgs/${capitalizedUsername}.png`;
+            userIcon.src = `imgs/${capitalizedUsername.toLowerCase()}.png`;
             userIcon.onerror = function() { this.src = 'imgs/logged_user.png'; };
             document.getElementById('user-info').classList.remove('hidden');
             
@@ -311,7 +327,7 @@
                 currentUser = savedUsername;
                 document.getElementById('username-display').textContent = savedUsername;
                 const userIcon = document.querySelector('.user-icon');
-                userIcon.src = `imgs/${savedUsername}.png`;
+                userIcon.src = `imgs/${savedUsername.toLowerCase()}.png`;
                 userIcon.onerror = function() { this.src = 'imgs/logged_user.png'; };
                 document.getElementById('login-form').classList.add('hidden');
                 document.getElementById('user-info').classList.remove('hidden');
@@ -324,7 +340,14 @@
         
         // Visualizza ricetta da home - apre pagina ricetta
         function viewRecipeFromHistory(index) {
-            window.location.href = `ricetta.html?index=${index}`;
+            const history = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
+            const recipe = history[index];
+            if (recipe) {
+                const recipeName = encodeURIComponent(recipe.flavorName);
+                window.location.href = `ricetta.html?index=${index}&name=${recipeName}`;
+            } else {
+                window.location.href = `ricetta.html?index=${index}`;
+            }
         }
         
         // Versione personalizzata di updateHistoryDisplay per la home (senza edit/delete)
@@ -390,7 +413,7 @@
                             </div>
                             <div class="history-meta">
                                 <div class="history-meta-item">
-                                    <img src="imgs/${entry.userName}.png" onerror="this.src='imgs/logged_user.png'" class="history-user-avatar" alt="${entry.userName}">
+                                    <img src="imgs/${entry.userName.toLowerCase()}.png" onerror="this.src='imgs/logged_user.png'" class="history-user-avatar" alt="${entry.userName}">
                                     ${entry.userName}
                                 </div>
                                 <div class="history-meta-item">
@@ -441,17 +464,107 @@
             }
         }
 
+        // Funzione per mostrare modal di conferma
+        // Funzione per riprodurre il beep usando Web Audio API
+        function playBeep(frequency = 800) {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = frequency; // Frequenza in Hz
+                oscillator.type = 'sine'; // Tipo di onda
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.15);
+            } catch (err) {
+                console.log('Audio play failed:', err);
+            }
+        }
+
+        // Funzione per mostrare notifica toast
+        function showConfirmation(message, type = 'add') {
+            const notification = document.createElement('div');
+            notification.className = `ingredient-notification ${type === 'remove' ? 'remove' : ''}`;
+            const icon = type === 'remove' ? 'fa-trash-alt' : 'fa-check';
+            notification.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+            document.body.appendChild(notification);
+            
+            // Mostra notifica con animazione
+            setTimeout(() => notification.classList.add('show'), 10);
+            
+            // Rimuovi dopo 2 secondi
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }
+
+        function showConfirmModal(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('confirm-modal');
+                const messageEl = document.getElementById('confirm-modal-message');
+                const confirmBtn = document.getElementById('confirm-modal-confirm');
+                const cancelBtn = document.getElementById('confirm-modal-cancel');
+                
+                messageEl.textContent = message;
+                modal.style.display = 'block';
+                
+                const handleConfirm = () => {
+                    modal.style.display = 'none';
+                    cleanup();
+                    resolve(true);
+                };
+                
+                const handleCancel = () => {
+                    modal.style.display = 'none';
+                    cleanup();
+                    resolve(false);
+                };
+                
+                const cleanup = () => {
+                    confirmBtn.removeEventListener('click', handleConfirm);
+                    cancelBtn.removeEventListener('click', handleCancel);
+                    modal.removeEventListener('click', handleOutsideClick);
+                };
+                
+                const handleOutsideClick = (e) => {
+                    if (e.target === modal) {
+                        handleCancel();
+                    }
+                };
+                
+                confirmBtn.addEventListener('click', handleConfirm);
+                cancelBtn.addEventListener('click', handleCancel);
+                modal.addEventListener('click', handleOutsideClick);
+            });
+        }
+
         // Funzione per eliminare una ricetta
-        function deleteRecipeFromHistory(index) {
-            if (!confirm('Sei sicuro di voler eliminare questa ricetta?')) {
+        async function deleteRecipeFromHistory(index) {
+            const confirmed = await showConfirmModal('Sei sicuro di voler eliminare questa ricetta?');
+            if (!confirmed) {
                 return;
             }
 
             const recipes = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
             
             if (index >= 0 && index < recipes.length) {
+                const recipeName = recipes[index].flavorName;
                 recipes.splice(index, 1);
                 localStorage.setItem('gelatoHistory', JSON.stringify(recipes));
+                
+                // Riproduci suono di eliminazione
+                playBeep(400);
+                
+                // Mostra notifica
+                showConfirmation(`Ricetta "${recipeName}" eliminata`, 'remove');
                 
                 // Ricarica le ricette
                 updateHistoryDisplay();
