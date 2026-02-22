@@ -17,6 +17,7 @@
         }
         
         .welcome-section h2 {
+            color: white;
             font-size: 2rem;
             margin-bottom: 15px;
         }
@@ -117,6 +118,24 @@
             background: #c0392b;
             transform: scale(1.1);
         }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-color);
+            opacity: 0.6;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h2 {
+            color: var(--text-color);
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -149,10 +168,10 @@
         <main>
             <!-- Sezione Benvenuto -->
             <section class="welcome-section">
-                <h2>Benvenuti a Fiori Celesti</h2>
+                <h2>Gelateria Fiori Celesti</h2>
                 <p>
-                    La piattaforma professionale per la creazione e gestione delle tue ricette di gelateria artigianale. 
-                    Calcola le composizioni nutrizionali, bilancia gli ingredienti e archivia le tue creazioni con precisione scientifica.
+                    La piattaforma per la creazione e gestione delle ricette di gelateria artigianale di Fiori Celesti. 
+                    Calcola le composizioni nutrizionali, bilancia gli ingredienti e archivia le ricette.
                 </p>
             </section>
 
@@ -193,14 +212,12 @@
             <section class="history-section" id="history-section">
                 <div class="history-header">
                     <h2><i class="fas fa-history"></i> Ricette recenti</h2>
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <a href="ricettario.html" class="btn-secondary" style="font-size: 0.9rem; padding: 8px 15px;">
-                            <i class="fas fa-book-open"></i> Vedi tutte le ricette
-                        </a>
-                    </div>
                 </div>
                 <div id="history-list" class="history-list">
-                    <p class="empty-message">Nessuna ricetta salvata ancora.</p>
+                    <div class="empty-state">
+                        <i class="fas fa-ice-cream"></i>
+                        <h2>Nessuna ricetta salvata</h2>
+                    </div>
                 </div>
             </section>
         </main>
@@ -316,7 +333,7 @@
             const history = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
             
             if (history.length === 0) {
-                historyList.innerHTML = '<p class="empty-message">Nessuna ricetta salvata ancora.</p>';
+                historyList.innerHTML = '<div class="empty-state"><i class="fas fa-ice-cream"></i><h2>Nessuna ricetta salvata</h2></div>';
                 return;
             }
             

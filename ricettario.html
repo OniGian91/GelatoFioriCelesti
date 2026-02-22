@@ -396,6 +396,15 @@
             opacity: 0.3;
         }
 
+        .empty-state h2 {
+            margin: 0;
+        }
+
+        /* Nascondi search-filter quando non ci sono ricette */
+        .no-recipes .search-filter {
+            display: none;
+        }
+
         .recipe-actions {
             display: flex;
             gap: 8px;
@@ -649,33 +658,33 @@
         // Visualizza le ricette
         function displayRecipes() {
             const container = document.getElementById('recipes-container');
+            const main = document.querySelector('main');
             
             // Aggiorna il contatore delle ricette totali
             document.getElementById('total-recipes').textContent = allRecipes.length;
 
             if (filteredRecipes.length === 0) {
                 if (allRecipes.length === 0) {
+                    main.classList.add('no-recipes');
                     container.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-ice-cream"></i>
                             <h2>Nessuna ricetta salvata</h2>
-                            <p>Inizia a creare le tue ricette per vederle qui!</p>
-                            <a href="preparazione.html" class="btn btn-primary" style="margin-top: 20px;">
-                                <i class="fas fa-plus"></i> Crea la tua prima ricetta
-                            </a>
                         </div>
                     `;
                 } else {
+                    main.classList.remove('no-recipes');
                     container.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-search"></i>
                             <h2>Nessuna ricetta trovata</h2>
-                            <p>Prova a cercare con un altro nome</p>
                         </div>
                     `;
                 }
                 return;
             }
+
+            main.classList.remove('no-recipes');
 
             // Genera le card delle ricette
             container.innerHTML = filteredRecipes.map((recipe, index) => {
