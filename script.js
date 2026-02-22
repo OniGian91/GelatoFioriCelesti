@@ -67,6 +67,27 @@ function setupEventListeners() {
         });
     }
     
+    // Event listener per il logo che porta alla home
+    const logoHomeLink = document.getElementById('logo-home-link');
+    if (logoHomeLink) {
+        logoHomeLink.addEventListener('click', async (e) => {
+            e.preventDefault(); // Previeni navigazione di default
+            
+            // Controlla se c'è lavoro in corso
+            if (isFlavorConfirmed || recipe.length > 0) {
+                const confirmed = await showConfirmModal('Hai una preparazione in corso. Se torni alla home, perderai tutti i dati non salvati. Continuare?');
+                if (confirmed) {
+                    // L'utente ha confermato, permetti la navigazione
+                    allowNavigation = true;
+                    window.location.href = 'index.html';
+                }
+            } else {
+                // Nessun dato da salvare, vai direttamente
+                window.location.href = 'index.html';
+            }
+        });
+    }
+    
     // Permetti di premere Enter per fare login
     document.getElementById('username-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
