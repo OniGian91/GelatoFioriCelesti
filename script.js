@@ -135,18 +135,20 @@ function handleLogin() {
         return;
     }
     
-    currentUser = username;
+    // Capitalizza la prima lettera del nome
+    const capitalizedUsername = username.charAt(0).toUpperCase() + username.slice(1).toLowerCase();
+    currentUser = capitalizedUsername;
     
     // Salva il nome utente in localStorage
-    localStorage.setItem('gelatoUserName', username);
+    localStorage.setItem('gelatoUserName', capitalizedUsername);
     
     // Nascondi il form di login
     document.getElementById('login-form').classList.add('hidden');
     
     // Mostra le info utente
-    document.getElementById('username-display').textContent = username;
+    document.getElementById('username-display').textContent = capitalizedUsername;
     const userIcon = document.querySelector('.user-icon');
-    userIcon.src = `imgs/${username}.png`;
+    userIcon.src = `imgs/${capitalizedUsername}.png`;
     userIcon.onerror = function() { this.src = 'imgs/logged_user.png'; };
     document.getElementById('user-info').classList.remove('hidden');
     

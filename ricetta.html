@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiori Celesti - Ricetta</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .recipe-view-container {
+            width: 100%;
+        }
+
+        .recipe-header-view {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .recipe-title-main {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .recipe-title-main i {
+            font-size: 2.5rem;
+        }
+
+        .btn-rename-title {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.7rem;
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-rename-title i {
+            font-size: 0.65rem;
+        }
+
+        .btn-rename-title:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .recipe-metadata {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+            font-size: 0.95rem;
+            opacity: 0.95;
+        }
+
+        .recipe-metadata-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .recipe-metadata-item img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .recipe-content-grid {
+            display: grid;
+            gap: 25px;
+        }
+
+        .recipe-section-card {
+            background: var(--bg-color);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+        }
+
+        .recipe-section-card.highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+
+        .recipe-section-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .recipe-section-card.highlight h3 {
+            color: white;
+        }
+
+        .ingredients-list-view {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .ingredient-item-view {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid var(--primary-color);
+            transition: transform 0.2s;
+        }
+
+        .ingredient-item-view:hover {
+            transform: translateX(5px);
+        }
+
+        .ingredient-name-view {
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        .ingredient-weight-view {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .macro-grid-view {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .macro-item-view {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .macro-label-view {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .macro-value-view {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-family: 'Courier New', monospace;
+        }
+
+        .properties-grid-view {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .property-item-view {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .property-label-view {
+            font-weight: 600;
+        }
+
+        .property-value-view {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn-large {
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-prepare {
+            background: #27ae60;
+            color: white;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+        }
+
+        .btn-prepare:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.5);
+        }
+
+        .btn-print-recipe {
+            background: #f39c12;
+            color: white;
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
+        }
+
+        .btn-print-recipe:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.5);
+        }
+
+        .btn-print-label {
+            background: #4a90e2;
+            color: white;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
+        }
+
+        .btn-print-label:hover {
+            background: #357abd;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.5);
+        }
+
+        .print-section,
+        .recipe-print-section {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 2px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <a href="index.html" style="display: inline-block; cursor: pointer;">
+                    <img src="imgs/logo.jpg" alt="Logo Fiori Celesti" class="logo" style="cursor: pointer;">
+                </a>
+                <div class="header-text">
+                    <h1>Fiori Celesti</h1>
+                    <p class="subtitle">Ricetta Gelato</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-info hidden" id="user-info">
+                    <img src="imgs/logged_user.png" alt="User" class="user-icon">
+                    <span class="username-display" id="username-display"></span>
+                    <button id="logout-btn" class="btn-logout" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <a href="ricettario.html" class="back-button btn-secondary" style="display: inline-block; margin-bottom: 20px;">
+                <i class="fas fa-arrow-left"></i> Torna al Ricettario
+            </a>
+
+            <div class="recipe-view-container">
+                <div class="recipe-header-view" id="recipe-header-view">
+                    <h1 class="recipe-title-main">
+                        <i class="fas fa-ice-cream"></i>
+                        <span id="recipe-name-display">Caricamento...</span>
+                        <button class="btn-rename-title" id="rename-btn" title="Rinomina ricetta">
+                            <i class="fas fa-edit"></i>Rinomina
+                        </button>
+                    </h1>
+                    <div class="recipe-metadata" id="recipe-metadata">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div class="recipe-content-grid">
+                    <!-- Composizione -->
+                    <div class="result-card highlight">
+                        <h3>Composizione ricetta - <span id="total-weight-view">0 g</span></h3>
+                        <div class="ingredients-blocks" id="ingredients-blocks"></div>
+                    </div>
+
+                    <!-- Ingredienti -->
+                    <div class="recipe-section-card">
+                        <h3><i class="fas fa-list"></i> Ingredienti (<span id="ingredients-count">0</span>)</h3>
+                        <ul class="ingredients-list-view" id="ingredients-list-view">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </div>
+
+                    <!-- Macronutrienti Totali -->
+                    <div class="recipe-section-card">
+                        <h3><i class="fas fa-balance-scale"></i> Macronutrienti - Totale</h3>
+                        <div class="macro-grid-view" id="macro-total-view">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Macronutrienti per 100g -->
+                    <div class="recipe-section-card">
+                        <h3><i class="fas fa-weight"></i> Macronutrienti - per 100g</h3>
+                        <div class="macro-grid-view" id="macro-100g-view">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Proprietà -->
+                    <div class="recipe-section-card">
+                        <h3><i class="fas fa-flask"></i> Proprietà del Gelato</h3>
+                        <div class="properties-grid-view" id="properties-view">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn-large btn-prepare" id="prepare-btn">
+                        <i class="fas fa-blender"></i> Prepara Ricetta
+                    </button>
+                    <button class="btn-large btn-print-recipe" id="print-recipe-btn">
+                        <i class="fas fa-receipt"></i> Stampa Ricetta
+                    </button>
+                    <button class="btn-large btn-print-label" id="print-label-btn">
+                        <i class="fas fa-print"></i> Stampa Etichetta
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sezione Etichetta Stampabile -->
+            <section class="print-section hidden" id="print-section">
+                <h2><i class="fas fa-tag"></i> Etichetta Prodotto</h2>
+                <div id="label-container" class="label-container hidden">
+                    <div class="label-content">
+                        <div class="label-header">
+                            <img src="imgs/logo.jpg" alt="Logo Fiori Celesti" class="label-logo">
+                            <div>
+                                <h3>Fiori Celesti</h3>
+                                <p class="label-product-name" id="label-flavor-name">Gelato Artigianale</p>
+                            </div>
+                        </div>
+
+                        <div class="label-section">
+                            <h4>Ingredienti</h4>
+                            <p id="label-ingredients" class="ingredients-text"></p>
+                        </div>
+
+                        <div class="label-section">
+                            <h4>Informazioni Nutrizionali</h4>
+                            <p class="nutrition-subtitle">Valori medi per 100 g</p>
+                            <table class="nutrition-table">
+                                <tbody>
+                                    <tr>
+                                        <td class="nutrition-label">Energia</td>
+                                        <td class="nutrition-value" id="label-energy">0 kJ / 0 kcal</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="nutrition-label">Grassi</td>
+                                        <td class="nutrition-value" id="label-fats">0 g</td>
+                                    </tr>
+                                    <tr class="sub-row">
+                                        <td class="nutrition-label indent">di cui acidi grassi saturi</td>
+                                        <td class="nutrition-value" id="label-saturated">- g</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="nutrition-label">Carboidrati</td>
+                                        <td class="nutrition-value" id="label-carbs">0 g</td>
+                                    </tr>
+                                    <tr class="sub-row">
+                                        <td class="nutrition-label indent">di cui zuccheri</td>
+                                        <td class="nutrition-value" id="label-sugars">0 g</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="nutrition-label">Proteine</td>
+                                        <td class="nutrition-value" id="label-proteins">0 g</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="nutrition-label">Sale</td>
+                                        <td class="nutrition-value" id="label-salt">< 0,01 g</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="label-footer">
+                            <p>Prodotto artigianale da consumarsi preferibilmente entro pochi giorni dalla produzione.</p>
+                            <p>Conservare a -18°C</p>
+                        </div>
+
+                        <button id="print-btn" class="btn-secondary" onclick="window.print()">🖨️ Stampa Etichetta</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sezione Ricetta Stampabile -->
+            <section class="recipe-print-section hidden" id="recipe-print-section">
+                <h2><i class="fas fa-receipt"></i> Ricetta</h2>
+                <div id="recipe-container" class="recipe-container hidden">
+                    <div class="recipe-content">
+                        <div class="recipe-print-header">
+                            <img src="imgs/logo.jpg" alt="Logo Fiori Celesti" class="recipe-print-logo">
+                            <div>
+                                <h3>Fiori Celesti</h3>
+                                <h4 class="recipe-print-flavor-name" id="recipe-flavor-name">Gelato Artigianale</h4>
+                            </div>
+                        </div>
+
+                        <div class="recipe-section">
+                            <h4>Ingredienti</h4>
+                            <table class="recipe-ingredients-table" id="recipe-ingredients-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ingrediente</th>
+                                        <th>Quantità</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recipe-ingredients-body">
+                                </tbody>
+                            </table>
+                            <p class="recipe-total">Peso totale: <strong id="recipe-total-weight">0 g</strong></p>
+                        </div>
+
+                        <div class="recipe-footer">
+                            <p>Ricetta creata con Gelato Fiori Celesti</p>
+                        </div>
+
+                        <button id="print-recipe-final-btn" class="btn-secondary" onclick="window.print()">🖨️ Stampa Ricetta</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Gelato Fiori Celesti</p>
+        </footer>
+    </div>
+
+    <script src="ingredientsDB.js"></script>
+    <script>
+        // Colori per gli ingredienti
+        const ingredientColors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+            '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B739', '#52B788',
+            '#FF8FA3', '#C9ADA7', '#A8DADC', '#F4A261', '#E9C46A',
+            '#2A9D8F', '#E76F51', '#8E7DBE', '#F4978E', '#84A59D'
+        ];
+
+        function getIngredientColor(name) {
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const index = Math.abs(hash) % ingredientColors.length;
+            return ingredientColors[index];
+        }
+
+        function checkSavedUser() {
+            const savedUser = localStorage.getItem('gelatoUserName');
+            if (savedUser) {
+                document.getElementById('username-display').textContent = savedUser;
+                const userIcon = document.querySelector('.user-icon');
+                userIcon.src = `imgs/${savedUser}.png`;
+                userIcon.onerror = function() { this.src = 'imgs/logged_user.png'; };
+                document.getElementById('user-info').classList.remove('hidden');
+            } else {
+                alert('Devi effettuare il login per visualizzare le ricette. Torna alla home page.');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            }
+        }
+
+        function handleLogout() {
+            if (confirm('Vuoi effettuare il logout?')) {
+                localStorage.removeItem('gelatoUserName');
+                window.location.href = 'index.html';
+            }
+        }
+
+        function loadRecipe() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const recipeIndex = parseInt(urlParams.get('index'));
+
+            if (isNaN(recipeIndex)) {
+                alert('Ricetta non trovata!');
+                window.location.href = 'ricettario.html';
+                return;
+            }
+
+            const history = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
+            const recipe = history[recipeIndex];
+
+            if (!recipe) {
+                alert('Ricetta non trovata!');
+                window.location.href = 'ricettario.html';
+                return;
+            }
+
+            // Nome ricetta
+            document.getElementById('recipe-name-display').textContent = recipe.flavorName;
+
+            // Metadata
+            const date = new Date(recipe.date);
+            const dateStr = date.toLocaleDateString('it-IT', { 
+                day: '2-digit', 
+                month: 'long', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const totalWeight = recipe.recipe.reduce((sum, item) => sum + item.weight, 0);
+
+            document.getElementById('recipe-metadata').innerHTML = `
+                <div class="recipe-metadata-item">
+                    <img src="imgs/${recipe.userName}.png" onerror="this.src='imgs/logged_user.png'" alt="${recipe.userName}">
+                    <span>${recipe.userName}</span>
+                </div>
+                <div class="recipe-metadata-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>${dateStr}</span>
+                </div>
+                <div class="recipe-metadata-item">
+                    <i class="fas fa-weight"></i>
+                    <span>${totalWeight.toFixed(1)} g</span>
+                </div>
+            `;
+
+            document.getElementById('total-weight-view').textContent = `${totalWeight.toFixed(1)} g`;
+            document.getElementById('ingredients-count').textContent = recipe.recipe.length;
+
+            // Calcola macronutrienti
+            const totals = calculateNutrients(recipe.recipe);
+
+            // Composizione visiva
+            displayComposition(recipe.recipe);
+
+            // Ingredienti ordinati per peso
+            const sortedIngredients = [...recipe.recipe].sort((a, b) => b.weight - a.weight);
+            const ingredientsHTML = sortedIngredients.map(item => {
+                const color = getIngredientColor(item.name);
+                return `
+                    <li class="ingredient-item-view" style="border-left-color: ${color};">
+                        <span class="ingredient-name-view">${item.name}</span>
+                        <span class="ingredient-weight-view">${item.weight} g</span>
+                    </li>
+                `;
+            }).join('');
+            document.getElementById('ingredients-list-view').innerHTML = ingredientsHTML;
+
+            // Macronutrienti totali
+            document.getElementById('macro-total-view').innerHTML = `
+                <div class="macro-item-view">
+                    <span class="macro-label-view">Acqua:</span>
+                    <span class="macro-value-view">${totals.water.toFixed(1)} g (${totals.waterPercent.toFixed(1)}%)</span>
+                </div>
+                <div class="macro-item-view">
+                    <span class="macro-label-view">Zuccheri:</span>
+                    <span class="macro-value-view">${totals.sugars.toFixed(1)} g (${totals.sugarsPercent.toFixed(1)}%)</span>
+                </div>
+                <div class="macro-item-view">
+                    <span class="macro-label-view">Grassi:</span>
+                    <span class="macro-value-view">${totals.fats.toFixed(1)} g (${totals.fatsPercent.toFixed(1)}%)</span>
+                </div>
+                <div class="macro-item-view">
+                    <span class="macro-label-view">Proteine:</span>
+                    <span class="macro-value-view">${totals.proteins.toFixed(1)} g (${totals.proteinsPercent.toFixed(1)}%)</span>
+                </div>
+                <div class="macro-item-view">
+                    <span class="macro-label-view">Altri Solidi:</span>
+                    <span class="macro-value-view">${totals.otherSolids.toFixed(1)} g (${totals.otherSolidsPercent.toFixed(1)}%)</span>
+                </div>
+            `;
+
+            // Macronutrienti per 100g
+            const per100g = calculate100g(totals);
+            document.getElementById('macro-100g-view').innerHTML = `
+                <div class="macro-item-view">
+                    <span class="macro-label-view">Acqua:</span>
+                    <span class="macro-value-view">${per100g.water.toFixed(1)} g (${per100g.waterPercent.toFixed(1)}%)</span>
+                </div>
+                <div class="macro-item-view">
+                    <span class="macro-label-view">Zuccheri:</span>
+                    <span class="macro-value-view">${per100g.sugars.toFixed(1)} g (${per100g.sugarsPercent.toFixed(1)}%)</span>
+                </div>
+                <div class="macro-item-view">
+                    <span class="macro-label-view">Grassi:</span>
+                    <span class="macro-value-view">${per100g.fats.toFixed(1)} g (${per100g.fatsPercent.toFixed(1)}%)</span>
+                </div>
+                <div class="macro-item-view">
+                    <span class="macro-label-view">Proteine:</span>
+                    <span class="macro-value-view">${per100g.proteins.toFixed(1)} g (${per100g.proteinsPercent.toFixed(1)}%)</span>
+                </div>
+                <div class="macro-item-view">
+                    <span class="macro-label-view">Altri Solidi:</span>
+                    <span class="macro-value-view">${per100g.otherSolids.toFixed(1)} g (${per100g.otherSolidsPercent.toFixed(1)}%)</span>
+                </div>
+            `;
+
+            // Proprietà
+            const totalSolids = ((totals.totalWeight - totals.water) / totals.totalWeight * 100);
+            const totalFatsPercent = (totals.fats / totals.totalWeight * 100);
+
+            document.getElementById('properties-view').innerHTML = `
+                <div class="property-item-view">
+                    <span class="property-label-view">POD (Potere Dolcificante):</span>
+                    <span class="property-value-view">${totals.pod.toFixed(0)}</span>
+                </div>
+                <div class="property-item-view">
+                    <span class="property-label-view">PAC (Potere Anticongelante):</span>
+                    <span class="property-value-view">${totals.pac.toFixed(0)}</span>
+                </div>
+                <div class="property-item-view">
+                    <span class="property-label-view">Solidi Totali:</span>
+                    <span class="property-value-view">${totalSolids.toFixed(1)}% (Ideale: 36-42%)</span>
+                </div>
+                <div class="property-item-view">
+                    <span class="property-label-view">Grassi Totali:</span>
+                    <span class="property-value-view">${totalFatsPercent.toFixed(1)}% (Ideale: 6-10%)</span>
+                </div>
+            `;
+
+            // Pulsante Prepara
+            document.getElementById('prepare-btn').addEventListener('click', () => {
+                localStorage.setItem('gelatoRecipeToLoad', JSON.stringify(recipe));
+                window.location.href = 'preparazione.html';
+            });
+
+            // Pulsante Rinomina
+            document.getElementById('rename-btn').addEventListener('click', () => {
+                renameRecipe();
+            });
+
+            // Pulsanti Stampa
+            document.getElementById('print-label-btn').addEventListener('click', () => {
+                showPrintLabel();
+            });
+
+            document.getElementById('print-recipe-btn').addEventListener('click', () => {
+                showPrintRecipe();
+            });
+        }
+
+        // Rinomina la ricetta
+        function renameRecipe() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const recipeIndex = parseInt(urlParams.get('index'));
+            const recipes = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
+            
+            if (isNaN(recipeIndex) || recipeIndex < 0 || recipeIndex >= recipes.length) {
+                alert('Ricetta non trovata.');
+                return;
+            }
+
+            const recipe = recipes[recipeIndex];
+            const newName = prompt('Inserisci il nuovo nome per il gelato:', recipe.flavorName);
+            
+            if (newName && newName.trim() !== '') {
+                recipe.flavorName = newName.trim();
+                localStorage.setItem('gelatoHistory', JSON.stringify(recipes));
+                
+                // Ricarica la pagina per mostrare il nuovo nome
+                location.reload();
+            }
+        }
+
+        // Mostra l'etichetta per la stampa
+        function showPrintLabel() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const recipeIndex = parseInt(urlParams.get('index'));
+            const history = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
+            const recipe = history[recipeIndex];
+
+            if (!recipe) {
+                alert('Ricetta non trovata!');
+                return;
+            }
+
+            const totals = calculateNutrients(recipe.recipe);
+            const labelContainer = document.getElementById('label-container');
+            const printSection = document.getElementById('print-section');
+            const recipePrintSection = document.getElementById('recipe-print-section');
+            
+            // Nascondi la sezione ricetta
+            recipePrintSection.classList.add('hidden');
+            
+            // Mostra la sezione etichetta e il container
+            printSection.classList.remove('hidden');
+            labelContainer.classList.remove('hidden');
+            
+            // Aggiorna il nome del gusto nell'etichetta
+            document.getElementById('label-flavor-name').textContent = recipe.flavorName;
+            
+            // Ordina gli ingredienti per peso (dal più presente al meno)
+            const sortedIngredients = [...recipe.recipe].sort((a, b) => b.weight - a.weight);
+            
+            // Genera la lista degli ingredienti
+            const ingredientsList = sortedIngredients.map(item => item.name).join(', ').toLowerCase();
+            document.getElementById('label-ingredients').textContent = ingredientsList + '.';
+            
+            // Calcola valori nutrizionali per 100g
+            const water100g = totals.totalWeight > 0 ? (totals.water / totals.totalWeight) * 100 : 0;
+            const sugars100g = totals.totalWeight > 0 ? (totals.sugars / totals.totalWeight) * 100 : 0;
+            const fats100g = totals.totalWeight > 0 ? (totals.fats / totals.totalWeight) * 100 : 0;
+            const proteins100g = totals.totalWeight > 0 ? (totals.proteins / totals.totalWeight) * 100 : 0;
+            
+            // Calcola carboidrati totali (zuccheri + altri carboidrati approssimativi)
+            const carbs100g = sugars100g;
+            
+            // Calcola energia (kcal per 100g)
+            // Grassi: 9 kcal/g, Carboidrati: 4 kcal/g, Proteine: 4 kcal/g
+            const kcal = (fats100g * 9) + (carbs100g * 4) + (proteins100g * 4);
+            const kj = kcal * 4.184;
+            
+            // Popola la tabella nutrizionale
+            document.getElementById('label-energy').textContent = `${Math.round(kj)} kJ / ${Math.round(kcal)} kcal`;
+            document.getElementById('label-fats').textContent = `${fats100g.toFixed(1)} g`;
+            document.getElementById('label-saturated').textContent = `${(fats100g * 0.6).toFixed(1)} g`;
+            document.getElementById('label-carbs').textContent = `${carbs100g.toFixed(1)} g`;
+            document.getElementById('label-sugars').textContent = `${sugars100g.toFixed(1)} g`;
+            document.getElementById('label-proteins').textContent = `${proteins100g.toFixed(1)} g`;
+            
+            // Scroll verso l'etichetta
+            labelContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Mostra la ricetta per la stampa
+        function showPrintRecipe() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const recipeIndex = parseInt(urlParams.get('index'));
+            const history = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
+            const recipe = history[recipeIndex];
+
+            if (!recipe) {
+                alert('Ricetta non trovata!');
+                return;
+            }
+
+            const totals = calculateNutrients(recipe.recipe);
+            const recipeContainer = document.getElementById('recipe-container');
+            const recipePrintSection = document.getElementById('recipe-print-section');
+            const printSection = document.getElementById('print-section');
+            
+            // Nascondi la sezione etichetta
+            printSection.classList.add('hidden');
+            
+            // Mostra la sezione ricetta e il container
+            recipePrintSection.classList.remove('hidden');
+            recipeContainer.classList.remove('hidden');
+            
+            // Aggiorna il nome del gusto nella ricetta
+            document.getElementById('recipe-flavor-name').textContent = recipe.flavorName;
+            
+            // Ordina gli ingredienti per peso (dal più presente al meno)
+            const sortedIngredients = [...recipe.recipe].sort((a, b) => b.weight - a.weight);
+            
+            // Genera la tabella degli ingredienti
+            const ingredientsBody = document.getElementById('recipe-ingredients-body');
+            ingredientsBody.innerHTML = sortedIngredients.map(item => `
+                <tr>
+                    <td>${item.name}</td>
+                    <td>${item.weight} g</td>
+                </tr>
+            `).join('');
+            
+            // Aggiorna il peso totale
+            const weightKg = (totals.totalWeight / 1000).toFixed(3);
+            document.getElementById('recipe-total-weight').textContent = `${totals.totalWeight.toFixed(1)} g (${weightKg} kg)`;
+            
+            // Scroll verso la ricetta
+            recipeContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function displayComposition(ingredients) {
+            const totalWeight = ingredients.reduce((sum, item) => sum + item.weight, 0);
+            
+            if (ingredients.length === 0) {
+                document.getElementById('ingredients-blocks').innerHTML = '<p class="no-ingredients-message">Nessun ingrediente</p>';
+                return;
+            }
+            
+            const blocksHTML = ingredients.map(item => {
+                const percentage = (item.weight / totalWeight) * 100;
+                const color = getIngredientColor(item.name);
+                return `
+                    <div class="ingredient-block" style="flex-grow: ${item.weight}; background-color: ${color};" title="${item.name}: ${item.weight}g (${percentage.toFixed(1)}%)">
+                        <div class="ingredient-block-content">
+                            <div class="ingredient-block-name">${item.name}</div>
+                            <div class="ingredient-block-weight">${item.weight}g</div>
+                            <div class="ingredient-block-percent">${percentage.toFixed(1)}%</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('ingredients-blocks').innerHTML = blocksHTML;
+        }
+
+        function calculateNutrients(ingredients) {
+            let totals = {
+                water: 0,
+                sugars: 0,
+                fats: 0,
+                proteins: 0,
+                otherSolids: 0,
+                pod: 0,
+                pac: 0,
+                totalWeight: 0
+            };
+
+            ingredients.forEach(item => {
+                const ingredientData = ingredientsDB[item.name];
+                if (!ingredientData) return;
+
+                const weight = item.weight;
+                totals.water += (ingredientData.water / 100) * weight;
+                totals.sugars += (ingredientData.sugars / 100) * weight;
+                totals.fats += (ingredientData.fats / 100) * weight;
+                totals.proteins += (ingredientData.proteins / 100) * weight;
+                totals.otherSolids += (ingredientData.otherSolids / 100) * weight;
+                totals.pod += ingredientData.pod * weight;
+                totals.pac += ingredientData.pac * weight;
+                totals.totalWeight += weight;
+            });
+
+            totals.waterPercent = (totals.water / totals.totalWeight) * 100;
+            totals.sugarsPercent = (totals.sugars / totals.totalWeight) * 100;
+            totals.fatsPercent = (totals.fats / totals.totalWeight) * 100;
+            totals.proteinsPercent = (totals.proteins / totals.totalWeight) * 100;
+            totals.otherSolidsPercent = (totals.otherSolids / totals.totalWeight) * 100;
+
+            return totals;
+        }
+
+        function calculate100g(totals) {
+            const factor = 100 / totals.totalWeight;
+            return {
+                water: totals.water * factor,
+                sugars: totals.sugars * factor,
+                fats: totals.fats * factor,
+                proteins: totals.proteins * factor,
+                otherSolids: totals.otherSolids * factor,
+                waterPercent: totals.waterPercent,
+                sugarsPercent: totals.sugarsPercent,
+                fatsPercent: totals.fatsPercent,
+                proteinsPercent: totals.proteinsPercent,
+                otherSolidsPercent: totals.otherSolidsPercent
+            };
+        }
+
+        // Inizializza
+        document.addEventListener('DOMContentLoaded', () => {
+            checkSavedUser();
+            loadRecipe();
+
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', handleLogout);
+            }
+        });
+    </script>
+</body>
+</html>

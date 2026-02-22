@@ -27,6 +27,10 @@
             display: flex;
             gap: 10px;
             align-items: center;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
         }
 
         #search-input {
@@ -193,15 +197,15 @@
                 </div>
             </div>
 
-            <div class="ingredients-table-container">
-                <div class="search-container">
-                    <i class="fas fa-search" style="color: var(--primary-color);"></i>
-                    <input type="text" id="search-input" placeholder="Cerca ingrediente...">
-                    <button id="clear-search" class="btn-secondary" style="display: none;">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
+            <div class="search-container">
+                <i class="fas fa-search" style="color: var(--primary-color);"></i>
+                <input type="text" id="search-input" placeholder="Cerca ingrediente...">
+                <button id="clear-search" class="btn-secondary" style="display: none;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
 
+            <div class="ingredients-table-container">
                 <div class="table-wrapper">
                     <table class="ingredients-table" id="ingredients-table">
                         <thead>
