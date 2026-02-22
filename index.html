@@ -75,6 +75,48 @@
             color: #666;
             line-height: 1.5;
         }
+
+        .history-edit-btn {
+            background: #f39c12;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+        }
+
+        .history-edit-btn:hover {
+            background: #e67e22;
+            transform: scale(1.1);
+        }
+
+        .history-delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+        }
+
+        .history-delete-btn:hover {
+            background: #c0392b;
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
@@ -153,7 +195,7 @@
                     <h2><i class="fas fa-history"></i> Ricette recenti</h2>
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <a href="ricettario.html" class="btn-secondary" style="font-size: 0.9rem; padding: 8px 15px;">
-                            <i class="fas fa-book-open"></i> Ricettario
+                            <i class="fas fa-book-open"></i> Vedi tutte le ricette
                         </a>
                     </div>
                 </div>
@@ -164,7 +206,7 @@
         </main>
 
         <footer>
-            <p>&copy; 2026 Gelato Fiori Celesti</p>
+            <p>&copy; 2026 Gelateria Fiori Celesti</p>
         </footer>
     </div>
 
@@ -321,6 +363,12 @@
                                     <button class="history-load-btn" onclick="viewRecipeFromHistory(${index})" title="Visualizza ricetta">
                                         <i class="fas fa-eye"></i>
                                     </button>
+                                    <button class="history-edit-btn" onclick="renameRecipeFromHistory(${index})" title="Rinomina ricetta">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="history-delete-btn" onclick="deleteRecipeFromHistory(${index})" title="Elimina ricetta">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
                             </div>
                             <div class="history-meta">
@@ -355,6 +403,44 @@
             }).join('');
         }
         
+        // Funzione per rinominare una ricetta
+        function renameRecipeFromHistory(index) {
+            const recipes = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
+            
+            if (index < 0 || index >= recipes.length) {
+                alert('Ricetta non trovata.');
+                return;
+            }
+
+            const recipe = recipes[index];
+            const newName = prompt('Inserisci il nuovo nome per il gelato:', recipe.flavorName);
+            
+            if (newName && newName.trim() !== '') {
+                recipe.flavorName = newName.trim();
+                localStorage.setItem('gelatoHistory', JSON.stringify(recipes));
+                
+                // Ricarica le ricette
+                updateHistoryDisplay();
+            }
+        }
+
+        // Funzione per eliminare una ricetta
+        function deleteRecipeFromHistory(index) {
+            if (!confirm('Sei sicuro di voler eliminare questa ricetta?')) {
+                return;
+            }
+
+            const recipes = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
+            
+            if (index >= 0 && index < recipes.length) {
+                recipes.splice(index, 1);
+                localStorage.setItem('gelatoHistory', JSON.stringify(recipes));
+                
+                // Ricarica le ricette
+                updateHistoryDisplay();
+            }
+        }
+
         // Setup event listeners per la home
         document.getElementById('login-btn').addEventListener('click', handleLoginHome);
         document.getElementById('logout-btn').addEventListener('click', handleLogoutHome);

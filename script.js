@@ -241,14 +241,6 @@ function checkRecipeToLoad() {
             // Rimuovi la ricetta da caricare
             localStorage.removeItem('gelatoRecipeToLoad');
             
-            // Scorri verso la lista ingredienti
-            setTimeout(() => {
-                document.getElementById('ingredients-list-section').scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'start' 
-                });
-            }, 300);
-            
         } catch (error) {
             console.error('Errore nel caricamento della ricetta:', error);
             localStorage.removeItem('gelatoRecipeToLoad');

@@ -566,7 +566,7 @@
         </main>
 
         <footer>
-            <p>&copy; 2026 Gelato Fiori Celesti</p>
+            <p>&copy; 2026 Gelateria Fiori Celesti</p>
         </footer>
     </div>
 
@@ -834,8 +834,9 @@
                 const imageName = ingredient?.img || 'default';
                 return `
                     <div class="ingredient-block" 
-                         style="flex-grow: ${item.weight}; background-color: ${color};" 
-                         title="${item.name}: ${item.weight}g (${percentage}%)">
+                         style="flex-grow: ${item.weight}; background-color: ${color}; cursor: pointer;" 
+                         onclick="showIngredientModal('${item.name.replace(/'/g, "\\'")}')"
+                         title="Clicca per vedere i dettagli di ${item.name}">
                         <img src="imgs/ingredients/${imageName}.png" class="ingredient-block-icon" alt="${item.name}" onerror="this.style.display='none'">
                         <div>
                             <span class="block-name">${item.name}</span>
