@@ -92,18 +92,22 @@ function setupEventListeners() {
     const modal = document.getElementById('ingredient-modal');
     const closeBtn = document.querySelector('.modal-close');
     
-    closeBtn.addEventListener('click', closeIngredientModal);
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeIngredientModal);
+    }
     
     // Chiudi il modale cliccando fuori
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeIngredientModal();
-        }
-    });
+    if (modal) {
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeIngredientModal();
+            }
+        });
+    }
     
     // Chiudi il modale con ESC
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
+        if (e.key === 'Escape' && modal && modal.style.display === 'block') {
             closeIngredientModal();
         }
     });
@@ -805,7 +809,9 @@ function showIngredientModal(ingredientName) {
     }
     
     // Popola il modale
+    document.getElementById('modal-ingredient-image').src = `imgs/ingredients/${ingredient.img || 'default'}.png`;
     document.getElementById('modal-ingredient-name').textContent = ingredientName;
+    document.getElementById('modal-ingredient-help').textContent = ingredient.help || 'Nessuna descrizione disponibile.';
     document.getElementById('modal-water').textContent = `${ingredient.water.toFixed(1)}%`;
     document.getElementById('modal-sugars').textContent = `${ingredient.sugars.toFixed(1)}%`;
     document.getElementById('modal-fats').textContent = `${ingredient.fats.toFixed(1)}%`;

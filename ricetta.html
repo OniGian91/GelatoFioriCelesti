@@ -116,24 +116,26 @@
 
         .ingredient-item-view {
             display: flex;
-            justify-content: space-between;
+            gap: 10px;
             align-items: center;
             padding: 10px 12px;
             margin-bottom: 8px;
             background: white;
             border-radius: 5px;
-            border-left: 3px solid var(--primary-color);
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         .ingredient-item-view:hover {
-            transform: translateX(5px);
+            transform: translateX(3px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
         .ingredient-name-view {
             font-weight: 600;
             color: var(--text-color);
             font-size: 1rem;
+            flex: 1;
         }
 
         .ingredient-weight-view {
@@ -256,9 +258,63 @@
             padding-top: 40px;
             border-top: 2px solid var(--border-color);
         }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            header,
+            .back-button,
+            .recipe-header-view,
+            .recipe-content-grid,
+            .action-buttons,
+            footer,
+            #print-btn,
+            #print-recipe-final-btn {
+                display: none !important;
+            }
+
+            .print-section,
+            .recipe-print-section {
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+                border-top: none;
+            }
+
+            .label-content,
+            .recipe-content {
+                border: 2px solid #000;
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+
+            .label-container,
+            .recipe-container {
+                display: block !important;
+            }
+        }
     </style>
 </head>
 <body>
+    <div id="page-loader" class="page-loader">
+        <div class="loader-content">
+            <div class="ice-cream-loader">
+                <i class="fas fa-ice-cream fa-4x"></i>
+            </div>
+            <h2 class="loader-text">Caricamento ricetta...</h2>
+            <div class="loader-bar">
+                <div class="loader-progress"></div>
+            </div>
+        </div>
+    </div>
     <div class="container">
         <header>
             <div class="header-left">
@@ -340,7 +396,7 @@
 
                 <div class="action-buttons">
                     <button class="btn-large btn-prepare" id="prepare-btn">
-                        <i class="fas fa-blender"></i> Prepara Ricetta
+                        <i class="fas fa-blender"></i> Modifica Ricetta
                     </button>
                     <button class="btn-large btn-print-recipe" id="print-recipe-btn">
                         <i class="fas fa-receipt"></i> Stampa Ricetta
@@ -562,10 +618,11 @@
             // Ingredienti ordinati per peso
             const sortedIngredients = [...recipe.recipe].sort((a, b) => b.weight - a.weight);
             const ingredientsHTML = sortedIngredients.map(item => {
-                const color = getIngredientColor(item.name);
+                const imageName = ingredientsDB[item.name]?.img || 'default';
                 return `
-                    <li class="ingredient-item-view" style="border-left-color: ${color};">
-                        <span class="ingredient-name-view">${item.name}</span>
+                    <li class="ingredient-item-view">
+                        <img src="imgs/ingredients/${imageName}.png" class="ingredient-icon" alt="${item.name}" onerror="this.src='imgs/ingredients/default.png'">
+                        <span class="ingredient-name-view" onclick="showIngredientModal('${item.name.replace(/'/g, "\\\'")}')" style="cursor: pointer;">${item.name}</span>
                         <span class="ingredient-weight-view">${item.weight} g</span>
                     </li>
                 `;
@@ -880,6 +937,111 @@
             if (logoutBtn) {
                 logoutBtn.addEventListener('click', handleLogout);
             }
+        });
+
+        // Modal functions for ingredient details
+        function showIngredientModal(ingredientName) {
+            const ingredient = ingredientsDB[ingredientName];
+            if (!ingredient) return;
+
+            document.getElementById('modal-ingredient-image').src = `imgs/ingredients/${ingredient.img || 'default'}.png`;
+            document.getElementById('modal-ingredient-name').textContent = ingredientName;
+            document.getElementById('modal-ingredient-help').textContent = ingredient.help || 'Nessuna descrizione disponibile.';
+            document.getElementById('modal-water').textContent = ingredient.water.toFixed(1);
+            document.getElementById('modal-sugars').textContent = ingredient.sugars.toFixed(1);
+            document.getElementById('modal-fats').textContent = ingredient.fats.toFixed(1);
+            document.getElementById('modal-proteins').textContent = ingredient.proteins.toFixed(1);
+            document.getElementById('modal-other-solids').textContent = ingredient.otherSolids.toFixed(1);
+            document.getElementById('modal-pod').textContent = ingredient.pod.toFixed(1);
+            document.getElementById('modal-pac').textContent = ingredient.pac.toFixed(1);
+
+            const modal = document.getElementById('ingredient-modal');
+            modal.style.display = 'flex';
+        }
+
+        function closeIngredientModal() {
+            const modal = document.getElementById('ingredient-modal');
+            modal.style.display = 'none';
+        }
+
+        // Close modal when clicking outside of it
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('ingredient-modal');
+            if (event.target === modal) {
+                closeIngredientModal();
+            }
+        });
+
+        // Close button handler
+        const closeBtn = document.querySelector('.modal-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeIngredientModal);
+        }
+    </script>
+
+    <!-- Modal for ingredient details -->
+    <div id="ingredient-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeIngredientModal()">&times;</span>
+            <img id="modal-ingredient-image" class="modal-ingredient-image" src="" alt="Ingredient" onerror="this.src='imgs/ingredients/default.png'">
+            <h2 id="modal-ingredient-name"></h2>
+            <p id="modal-ingredient-help" class="modal-ingredient-help"></p>
+            <div class="modal-data-grid">
+                <div class="modal-data-item">
+                    <span class="modal-label">Acqua:</span>
+                    <span id="modal-water" class="modal-value"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">Zuccheri:</span>
+                    <span id="modal-sugars" class="modal-value"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">Grassi:</span>
+                    <span id="modal-fats" class="modal-value"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">Proteine:</span>
+                    <span id="modal-proteins" class="modal-value"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">Altri solidi:</span>
+                    <span id="modal-other-solids" class="modal-value"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">POD:</span>
+                    <span id="modal-pod" class="modal-value"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">PAC:</span>
+                    <span id="modal-pac" class="modal-value"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('page-loader');
+            const loaderProgress = document.querySelector('.loader-progress');
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    loaderProgress.style.width = '100%';
+                    clearInterval(interval);
+                    
+                    setTimeout(() => {
+                        loader.style.opacity = '0';
+                        setTimeout(() => {
+                            loader.style.display = 'none';
+                        }, 500);
+                    }, 300);
+                } else {
+                    loaderProgress.style.width = progress + '%';
+                }
+            }, 100);
         });
     </script>
 </body>

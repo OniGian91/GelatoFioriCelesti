@@ -243,24 +243,27 @@
         }
 
         .ingredient-list-item {
-            padding: 4px 8px 4px 12px;
-            background: transparent;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
-            border-left: 4px solid #ccc;
-            margin-bottom: 2px;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 5px;
+            margin-bottom: 4px;
             display: flex;
-            justify-content: space-between;
+            gap: 10px;
             align-items: center;
             font-size: 0.85rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .ingredient-list-item:last-child {
-            border-bottom: none;
+        .ingredient-list-item:hover {
+            transform: translateX(3px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
         .ingredient-name {
             font-weight: 500;
             color: var(--text-color);
+            flex: 1;
         }
 
         .ingredient-weight {
@@ -567,6 +570,46 @@
         </footer>
     </div>
 
+    <!-- Modal Ingrediente -->
+    <div id="ingredient-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <img id="modal-ingredient-image" class="modal-ingredient-image" src="" alt="Ingredient" onerror="this.src='imgs/ingredients/default.png'">
+            <h2 id="modal-ingredient-name"></h2>
+            <p id="modal-ingredient-help" class="modal-ingredient-help"></p>
+            <div class="modal-data-grid">
+                <div class="modal-data-item">
+                    <span class="modal-label">Acqua:</span>
+                    <span class="modal-value" id="modal-water"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">Zuccheri:</span>
+                    <span class="modal-value" id="modal-sugars"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">Grassi:</span>
+                    <span class="modal-value" id="modal-fats"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">Proteine (SLNG):</span>
+                    <span class="modal-value" id="modal-proteins"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">Altri solidi:</span>
+                    <span class="modal-value" id="modal-other-solids"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">POD:</span>
+                    <span class="modal-value" id="modal-pod"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">PAC:</span>
+                    <span class="modal-value" id="modal-pac"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="ingredientsDB.js"></script>
     <script>
         let allRecipes = [];
@@ -696,12 +739,13 @@
             // Ordina gli ingredienti per peso (dal più pesante al più leggero)
             const sortedIngredients = [...recipe.recipe].sort((a, b) => b.weight - a.weight);
             
-            // Genera la lista degli ingredienti con colori consistenti
+            // Genera la lista degli ingredienti
             const ingredientsHTML = sortedIngredients.map(item => {
-                const color = getIngredientColor(item.name);
+                const imageName = ingredientsDB[item.name]?.img || 'default';
                 return `
-                    <li class="ingredient-list-item" style="border-left-color: ${color};">
-                        <span class="ingredient-name">${item.name}</span>
+                    <li class="ingredient-list-item">
+                        <img src="imgs/ingredients/${imageName}.png" class="ingredient-icon" alt="${item.name}" onerror="this.src='imgs/ingredients/default.png'">
+                        <span class="ingredient-name" style="cursor: pointer;" onclick="showIngredientModal('${item.name.replace(/'/g, "\\'")}')")" title="Clicca per vedere i dettagli">${item.name}</span>
                         <span class="ingredient-weight">${item.weight} g</span>
                     </li>
                 `;
@@ -989,7 +1033,52 @@
                 myRecipesFilter.classList.toggle('active');
                 filterRecipes(searchInput.value);
             });
+
+            // Setup modale ingrediente
+            const modal = document.getElementById('ingredient-modal');
+            const closeBtn = document.querySelector('.modal-close');
+            
+            closeBtn.addEventListener('click', closeIngredientModal);
+            
+            // Chiudi cliccando fuori
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeIngredientModal();
+                }
+            });
         });
+
+        // Mostra il modale con i dettagli dell'ingrediente
+        function showIngredientModal(ingredientName) {
+            const ingredient = ingredientsDB[ingredientName];
+            
+            if (!ingredient) {
+                console.error('Ingrediente non trovato:', ingredientName);
+                return;
+            }
+            
+            // Popola il modale
+            document.getElementById('modal-ingredient-image').src = `imgs/ingredients/${ingredient.img || 'default'}.png`;
+            document.getElementById('modal-ingredient-name').textContent = ingredientName;
+            document.getElementById('modal-ingredient-help').textContent = ingredient.help || 'Nessuna descrizione disponibile.';
+            document.getElementById('modal-water').textContent = `${ingredient.water.toFixed(1)}%`;
+            document.getElementById('modal-sugars').textContent = `${ingredient.sugars.toFixed(1)}%`;
+            document.getElementById('modal-fats').textContent = `${ingredient.fats.toFixed(1)}%`;
+            document.getElementById('modal-proteins').textContent = `${ingredient.proteins.toFixed(1)}%`;
+            document.getElementById('modal-other-solids').textContent = `${ingredient.otherSolids.toFixed(1)}%`;
+            document.getElementById('modal-pod').textContent = ingredient.pod.toFixed(1);
+            document.getElementById('modal-pac').textContent = ingredient.pac.toFixed(1);
+            
+            // Mostra il modale
+            const modal = document.getElementById('ingredient-modal');
+            modal.style.display = 'block';
+        }
+
+        // Chiudi il modale
+        function closeIngredientModal() {
+            const modal = document.getElementById('ingredient-modal');
+            modal.style.display = 'none';
+        }
     </script>
 </body>
 </html>
