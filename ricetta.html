@@ -362,7 +362,7 @@
                     </div>
 
                     <!-- Ingredienti -->
-                    <div class="recipe-section-card">
+                    <div class="result-card">
                         <h3><i class="fas fa-list"></i> Ingredienti (<span id="ingredients-count">0</span>)</h3>
                         <ul class="ingredients-list-view" id="ingredients-list-view">
                             <!-- Populated by JS -->
@@ -370,25 +370,25 @@
                     </div>
 
                     <!-- Macronutrienti Totali -->
-                    <div class="recipe-section-card">
+                    <div class="result-card">
                         <h3><i class="fas fa-balance-scale"></i> Macronutrienti - Totale</h3>
-                        <div class="macro-grid-view" id="macro-total-view">
+                        <div class="macro-grid" id="macro-total-view">
                             <!-- Populated by JS -->
                         </div>
                     </div>
 
                     <!-- Macronutrienti per 100g -->
-                    <div class="recipe-section-card">
+                    <div class="result-card">
                         <h3><i class="fas fa-weight"></i> Macronutrienti - per 100g</h3>
-                        <div class="macro-grid-view" id="macro-100g-view">
+                        <div class="macro-grid" id="macro-100g-view">
                             <!-- Populated by JS -->
                         </div>
                     </div>
 
                     <!-- Proprietà -->
-                    <div class="recipe-section-card">
+                    <div class="result-card">
                         <h3><i class="fas fa-flask"></i> Proprietà del Gelato</h3>
-                        <div class="properties-grid-view" id="properties-view">
+                        <div class="properties-grid" id="properties-view">
                             <!-- Populated by JS -->
                         </div>
                     </div>
@@ -606,7 +606,8 @@
                 </div>
             `;
 
-            document.getElementById('total-weight-view').textContent = `${totalWeight.toFixed(1)} g`;
+            const weightKg = (totalWeight / 1000).toFixed(3);
+            document.getElementById('total-weight-view').textContent = `${totalWeight.toFixed(1)} g (${weightKg} kg)`;
             document.getElementById('ingredients-count').textContent = recipe.recipe.length;
 
             // Calcola macronutrienti
@@ -631,50 +632,50 @@
 
             // Macronutrienti totali
             document.getElementById('macro-total-view').innerHTML = `
-                <div class="macro-item-view">
-                    <span class="macro-label-view">Acqua:</span>
-                    <span class="macro-value-view">${totals.water.toFixed(1)} g (${totals.waterPercent.toFixed(1)}%)</span>
+                <div class="macro-item">
+                    <span class="macro-label">Acqua:</span>
+                    <span class="macro-value">${totals.water.toFixed(1)} g (${totals.waterPercent.toFixed(1)}%)</span>
                 </div>
-                <div class="macro-item-view">
-                    <span class="macro-label-view">Zuccheri:</span>
-                    <span class="macro-value-view">${totals.sugars.toFixed(1)} g (${totals.sugarsPercent.toFixed(1)}%)</span>
+                <div class="macro-item">
+                    <span class="macro-label">Zuccheri:</span>
+                    <span class="macro-value">${totals.sugars.toFixed(1)} g (${totals.sugarsPercent.toFixed(1)}%)</span>
                 </div>
-                <div class="macro-item-view">
-                    <span class="macro-label-view">Grassi:</span>
-                    <span class="macro-value-view">${totals.fats.toFixed(1)} g (${totals.fatsPercent.toFixed(1)}%)</span>
+                <div class="macro-item">
+                    <span class="macro-label">Grassi:</span>
+                    <span class="macro-value">${totals.fats.toFixed(1)} g (${totals.fatsPercent.toFixed(1)}%)</span>
                 </div>
-                <div class="macro-item-view">
-                    <span class="macro-label-view">Proteine:</span>
-                    <span class="macro-value-view">${totals.proteins.toFixed(1)} g (${totals.proteinsPercent.toFixed(1)}%)</span>
+                <div class="macro-item">
+                    <span class="macro-label">Proteine:</span>
+                    <span class="macro-value">${totals.proteins.toFixed(1)} g (${totals.proteinsPercent.toFixed(1)}%)</span>
                 </div>
-                <div class="macro-item-view">
-                    <span class="macro-label-view">Altri Solidi:</span>
-                    <span class="macro-value-view">${totals.otherSolids.toFixed(1)} g (${totals.otherSolidsPercent.toFixed(1)}%)</span>
+                <div class="macro-item">
+                    <span class="macro-label">Altri Solidi:</span>
+                    <span class="macro-value">${totals.otherSolids.toFixed(1)} g (${totals.otherSolidsPercent.toFixed(1)}%)</span>
                 </div>
             `;
 
             // Macronutrienti per 100g
             const per100g = calculate100g(totals);
             document.getElementById('macro-100g-view').innerHTML = `
-                <div class="macro-item-view">
-                    <span class="macro-label-view">Acqua:</span>
-                    <span class="macro-value-view">${per100g.water.toFixed(1)} g (${per100g.waterPercent.toFixed(1)}%)</span>
+                <div class="macro-item">
+                    <span class="macro-label">Acqua:</span>
+                    <span class="macro-value">${per100g.water.toFixed(1)} g (${per100g.waterPercent.toFixed(1)}%)</span>
                 </div>
-                <div class="macro-item-view">
-                    <span class="macro-label-view">Zuccheri:</span>
-                    <span class="macro-value-view">${per100g.sugars.toFixed(1)} g (${per100g.sugarsPercent.toFixed(1)}%)</span>
+                <div class="macro-item">
+                    <span class="macro-label">Zuccheri:</span>
+                    <span class="macro-value">${per100g.sugars.toFixed(1)} g (${per100g.sugarsPercent.toFixed(1)}%)</span>
                 </div>
-                <div class="macro-item-view">
-                    <span class="macro-label-view">Grassi:</span>
-                    <span class="macro-value-view">${per100g.fats.toFixed(1)} g (${per100g.fatsPercent.toFixed(1)}%)</span>
+                <div class="macro-item">
+                    <span class="macro-label">Grassi:</span>
+                    <span class="macro-value">${per100g.fats.toFixed(1)} g (${per100g.fatsPercent.toFixed(1)}%)</span>
                 </div>
-                <div class="macro-item-view">
-                    <span class="macro-label-view">Proteine:</span>
-                    <span class="macro-value-view">${per100g.proteins.toFixed(1)} g (${per100g.proteinsPercent.toFixed(1)}%)</span>
+                <div class="macro-item">
+                    <span class="macro-label">Proteine:</span>
+                    <span class="macro-value">${per100g.proteins.toFixed(1)} g (${per100g.proteinsPercent.toFixed(1)}%)</span>
                 </div>
-                <div class="macro-item-view">
-                    <span class="macro-label-view">Altri Solidi:</span>
-                    <span class="macro-value-view">${per100g.otherSolids.toFixed(1)} g (${per100g.otherSolidsPercent.toFixed(1)}%)</span>
+                <div class="macro-item">
+                    <span class="macro-label">Altri Solidi:</span>
+                    <span class="macro-value">${per100g.otherSolids.toFixed(1)} g (${per100g.otherSolidsPercent.toFixed(1)}%)</span>
                 </div>
             `;
 
@@ -683,21 +684,21 @@
             const totalFatsPercent = (totals.fats / totals.totalWeight * 100);
 
             document.getElementById('properties-view').innerHTML = `
-                <div class="property-item-view">
-                    <span class="property-label-view">POD (Potere Dolcificante):</span>
-                    <span class="property-value-view">${totals.pod.toFixed(0)}</span>
+                <div class="property-item">
+                    <span class="property-label">POD (Potere Dolcificante):</span>
+                    <span class="property-value">${totals.pod.toFixed(0)}</span>
                 </div>
-                <div class="property-item-view">
-                    <span class="property-label-view">PAC (Potere Anticongelante):</span>
-                    <span class="property-value-view">${totals.pac.toFixed(0)}</span>
+                <div class="property-item">
+                    <span class="property-label">PAC (Potere Anticongelante):</span>
+                    <span class="property-value">${totals.pac.toFixed(0)}</span>
                 </div>
-                <div class="property-item-view">
-                    <span class="property-label-view">Solidi Totali:</span>
-                    <span class="property-value-view">${totalSolids.toFixed(1)}% (Ideale: 36-42%)</span>
+                <div class="property-item">
+                    <span class="property-label">Solidi Totali:</span>
+                    <span class="property-value">${totalSolids.toFixed(1)}% (Ideale: 36-42%)</span>
                 </div>
-                <div class="property-item-view">
-                    <span class="property-label-view">Grassi Totali:</span>
-                    <span class="property-value-view">${totalFatsPercent.toFixed(1)}% (Ideale: 6-10%)</span>
+                <div class="property-item">
+                    <span class="property-label">Grassi Totali:</span>
+                    <span class="property-value">${totalFatsPercent.toFixed(1)}% (Ideale: 6-10%)</span>
                 </div>
             `;
 
@@ -863,8 +864,11 @@
             const blocksHTML = ingredients.map(item => {
                 const percentage = (item.weight / totalWeight) * 100;
                 const color = getIngredientColor(item.name);
+                const ingredient = ingredientsDB[item.name];
+                const imageName = ingredient?.img || 'default';
                 return `
                     <div class="ingredient-block" style="flex-grow: ${item.weight}; background-color: ${color};" title="${item.name}: ${item.weight}g (${percentage.toFixed(1)}%)">
+                        <img src="imgs/ingredients/${imageName}.png" class="ingredient-block-icon" alt="${item.name}" onerror="this.style.display='none'">
                         <div class="ingredient-block-content">
                             <div class="ingredient-block-name">${item.name}</div>
                             <div class="ingredient-block-weight">${item.weight}g</div>

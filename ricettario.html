@@ -830,10 +830,13 @@
             const blocks = recipe.map((item, index) => {
                 const percentage = (item.weight / totalWeight * 100).toFixed(1);
                 const color = colors[index % colors.length];
+                const ingredient = ingredientsDB[item.name];
+                const imageName = ingredient?.img || 'default';
                 return `
                     <div class="ingredient-block" 
                          style="flex-grow: ${item.weight}; background-color: ${color};" 
                          title="${item.name}: ${item.weight}g (${percentage}%)">
+                        <img src="imgs/ingredients/${imageName}.png" class="ingredient-block-icon" alt="${item.name}" onerror="this.style.display='none'">
                         <div>
                             <span class="block-name">${item.name}</span>
                             <span class="block-weight">${percentage}%</span>

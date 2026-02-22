@@ -879,9 +879,38 @@ a.btn-success {
     overflow: hidden;
 }
 
+.ingredient-block::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.1) 100%);
+    pointer-events: none;
+}
+
+.ingredient-block-icon {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    opacity: 0.4;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    object-fit: contain;
+    z-index: 0;
+    mix-blend-mode: multiply;
+}
+
 .ingredient-block:hover {
     transform: translateY(-3px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.ingredient-block:hover .ingredient-block-icon {
+    opacity: 0.6;
 }
 
 .ingredient-block-content {
@@ -889,6 +918,8 @@ a.btn-success {
     color: white;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     width: 100%;
+    position: relative;
+    z-index: 1;
 }
 
 .ingredient-block-name {

@@ -467,9 +467,12 @@ function updateIngredientsBlocks() {
     blocksContainer.innerHTML = recipe.map((item, index) => {
         const percentage = (item.weight / totalWeight * 100).toFixed(1);
         const color = getIngredientColor(item.name, index);
+        const ingredient = ingredientsDB[item.name];
+        const imageName = ingredient?.img || 'default';
         
         return `
             <div class="ingredient-block" style="flex-grow: ${item.weight}; background-color: ${color}; cursor: pointer;" onclick="showIngredientModal('${item.name.replace(/'/g, "\\'")}')" title="Clicca per vedere i dettagli di ${item.name}">
+                <img src="imgs/ingredients/${imageName}.png" class="ingredient-block-icon" alt="${item.name}" onerror="this.style.display='none'">
                 <div class="ingredient-block-content">
                     <div class="ingredient-block-name">${item.name}</div>
                     <div class="ingredient-block-weight">${item.weight}g</div>
