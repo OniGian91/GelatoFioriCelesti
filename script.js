@@ -6,6 +6,7 @@ let recipe = [];
 let flavorName = 'Gelato Artigianale';
 let isFlavorConfirmed = false;
 let currentUser = null;
+let allowNavigation = false; // Flag per permettere navigazione senza conferma
 
 // Inizializza l'applicazione
 function init() {
@@ -44,6 +45,22 @@ function setupEventListeners() {
     document.getElementById('login-btn').addEventListener('click', handleLogin);
     document.getElementById('logout-btn').addEventListener('click', handleLogout);
     document.getElementById('edit-flavor-btn').addEventListener('click', editFlavorName);
+    
+    // Event listener per il pulsante "Torna alla Home"
+    const backToHomeBtn = document.getElementById('back-to-home-btn');
+    if (backToHomeBtn) {
+        backToHomeBtn.addEventListener('click', (e) => {
+            // Controlla se c'è lavoro in corso
+            if (isFlavorConfirmed || recipe.length > 0) {
+                if (confirm('Hai una preparazione in corso. Se torni alla home, perderai tutti i dati non salvati. Continuare?')) {
+                    // L'utente ha confermato, permetti la navigazione senza ulteriori conferme
+                    allowNavigation = true;
+                } else {
+                    e.preventDefault(); // Blocca la navigazione
+                }
+            }
+        });
+    }
     
     // Permetti di premere Enter per fare login
     document.getElementById('username-input').addEventListener('keypress', (e) => {
@@ -88,6 +105,21 @@ function setupEventListeners() {
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeIngredientModal();
+        }
+    });
+    
+    // Previeni la chiusura/ricarica della pagina se ci sono dati non salvati
+    window.addEventListener('beforeunload', (e) => {
+        // Non mostrare la conferma se l'utente ha già confermato la navigazione
+        if (allowNavigation) {
+            return;
+        }
+        
+        // Controlla se c'è lavoro in corso
+        if (isFlavorConfirmed || recipe.length > 0) {
+            e.preventDefault();
+            e.returnValue = ''; // Necessario per Chrome
+            return ''; // Necessario per alcuni browser
         }
     });
 }
@@ -837,6 +869,12 @@ function getIngredientColor(name) {
 // Aggiorna la visualizzazione dell'history
 function updateHistoryDisplay() {
     const historyList = document.getElementById('history-list');
+    
+    // Se l'elemento non esiste (es. in preparazione.html), esci
+    if (!historyList) {
+        return;
+    }
+    
     const history = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
     
     if (history.length === 0) {

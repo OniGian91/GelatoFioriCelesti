@@ -481,6 +481,7 @@
                 <div class="user-info hidden" id="user-info">
                     <img src="imgs/logged_user.png" alt="User" class="user-icon">
                     <span class="username-display" id="username-display"></span>
+                    <button id="logout-btn" class="btn-logout" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
                 </div>
                 <div class="no-user-info" id="no-user-info">
                     <p style="color: #7f8c8d; font-size: 0.9rem;">Accedi dalla pagina principale</p>
@@ -490,7 +491,7 @@
 
         <main>
             <a href="index.html" class="back-button btn-secondary">
-                <i class="fas fa-arrow-left"></i> Torna al Calcolatore
+                <i class="fas fa-arrow-left"></i> Torna alla Home
             </a>
 
             <div class="search-filter">
@@ -553,7 +554,7 @@
                             <i class="fas fa-ice-cream"></i>
                             <h2>Nessuna ricetta salvata</h2>
                             <p>Inizia a creare le tue ricette per vederle qui!</p>
-                            <a href="index.html" class="btn btn-primary" style="margin-top: 20px;">
+                            <a href="preparazione.html" class="btn btn-primary" style="margin-top: 20px;">
                                 <i class="fas fa-plus"></i> Crea la tua prima ricetta
                             </a>
                         </div>
@@ -808,8 +809,8 @@
                 userName: recipe.userName
             }));
 
-            // Reindirizza alla pagina principale
-            window.location.href = 'index.html';
+            // Reindirizza alla pagina di preparazione
+            window.location.href = 'preparazione.html';
         }
 
         // Elimina una ricetta
@@ -850,9 +851,49 @@
             }
         }
 
+        // Controlla se c'è un utente loggato
+        function checkSavedUser() {
+            const savedUser = localStorage.getItem('gelatoUserName');
+            
+            if (savedUser) {
+                currentLoggedUser = savedUser;
+                document.getElementById('username-display').textContent = savedUser;
+                const userIcon = document.querySelector('.user-icon');
+                userIcon.src = `imgs/${savedUser}.png`;
+                userIcon.onerror = function() { this.src = 'imgs/logged_user.png'; };
+                document.getElementById('user-info').classList.remove('hidden');
+                document.getElementById('no-user-info').classList.add('hidden');
+                document.querySelector('main').classList.remove('hidden');
+            } else {
+                // Nessun utente loggato - nascondi il contenuto
+                document.getElementById('user-info').classList.add('hidden');
+                document.getElementById('no-user-info').classList.remove('hidden');
+                document.querySelector('main').classList.add('hidden');
+                alert('Devi effettuare il login per accedere al ricettario. Torna alla home page per fare il login.');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            }
+        }
+
+        // Gestisce il logout
+        function handleLogout() {
+            if (confirm('Vuoi effettuare il logout?')) {
+                localStorage.removeItem('gelatoUserName');
+                window.location.href = 'index.html';
+            }
+        }
+
         // Inizializza la pagina
         window.addEventListener('DOMContentLoaded', () => {
+            checkSavedUser();
             loadRecipes();
+            
+            // Setup del logout button
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', handleLogout);
+            }
             
             // Setup del filtro di ricerca
             const searchInput = document.getElementById('search-input');

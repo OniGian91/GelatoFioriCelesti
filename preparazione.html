@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiori Celesti - Calcolatore ricette gelateria</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <a href="index.html" style="display: inline-block; cursor: pointer;">
+                    <img src="imgs/logo.jpg" alt="Logo Fiori Celesti" class="logo" style="cursor: pointer;">
+                </a>
+                <div class="header-text">
+                    <h1>Fiori Celesti</h1>
+                    <p class="subtitle">Calcolatore ricette gelateria</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <!-- Form di login -->
+                <div class="login-form" id="login-form">
+                    <input type="text" id="username-input" placeholder="Il tuo nome...">
+                    <button id="login-btn" class="btn-primary"><i class="fas fa-sign-in-alt"></i> Login</button>
+                </div>
+                <!-- Info utente loggato -->
+                <div class="user-info hidden" id="user-info">
+                    <img src="imgs/logged_user.png" alt="User" class="user-icon">
+                    <span class="username-display" id="username-display"></span>
+                    <button id="logout-btn" class="btn-logout" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <a href="index.html" id="back-to-home-btn" class="back-button btn-secondary" style="display: inline-block; margin-bottom: 20px;">
+                <i class="fas fa-arrow-left"></i> Torna alla Home
+            </a>
+            
+            <!-- Sezione Preparazione -->
+            <section class="preparation-section">
+                <h2><i class="fas fa-clipboard-list"></i> Preparazione</h2>
+                <div class="preparation-content" id="flavor-name-form">
+                    <div class="flavor-name-container">
+                        <label for="flavor-name-input"><strong>Nome gusto:</strong></label>
+                        <input type="text" id="flavor-name-input" placeholder="Inserisci nome gusto..." autofocus>
+                    </div>
+                    <button id="confirm-flavor-btn" class="btn-success"><i class="fas fa-check"></i> Conferma</button>
+                </div>
+                <div class="preparation-header hidden" id="preparation-header">
+                    <div class="flavor-label">
+                        <span class="flavor-label-text" id="flavor-label-display">Gelato Artigianale</span>
+                    </div>
+                    <div class="preparation-actions">
+                        <button id="edit-flavor-btn" class="btn-secondary" title="Rinomina gusto"><i class="fas fa-edit"></i> Rinomina</button>
+                        <button id="clear-btn" class="btn-secondary" title="Nuova preparazione"><i class="fas fa-file"></i> Nuovo</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sezione Aggiunta Ingredienti -->
+            <section class="add-ingredient-section hidden" id="add-ingredient-section">
+                <div class="section-header-with-link">
+                    <h2><i class="fas fa-plus-circle"></i> Aggiungi ingrediente</h2>
+                    <a href="ingredienti.html" target="_blank" class="btn-warning btn-small" title="Apri database ingredienti">
+                        <i class="fas fa-book"></i> Ingredienti
+                    </a>
+                </div>
+                <div class="input-group">
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="ingredient-select">Ingrediente</label>
+                            <select id="ingredient-select">
+                                <option value="">Seleziona un ingrediente...</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="weight-input">Peso (grammi)</label>
+                            <input type="number" id="weight-input" min="0" step="0.1" placeholder="Ad esempio: 500">
+                        </div>
+                        <button id="add-btn" class="btn-primary" title="Aggiungi ingrediente"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sezione Ingredienti Aggiunti -->
+            <section class="ingredients-list-section hidden" id="ingredients-list-section">
+                <h2><i class="fas fa-list-ul"></i> Ingredienti nella ricetta</h2>
+                <div id="ingredients-list" class="ingredients-list">
+                    <p class="empty-message">Nessun ingrediente aggiunto. Inizia aggiungendo degli ingredienti!</p>
+                </div>
+            </section>
+
+            <!-- Sezione Risultati -->
+            <section class="results-section hidden" id="results-section">
+                <h2><i class="fas fa-chart-pie"></i> Analisi nutrizionale e proprietà del gelato</h2>
+                
+                <div class="results-grid">
+                    <!-- Peso Totale -->
+                    <div class="result-card highlight">
+                        <h3>Composizione ricetta - <span id="total-weight-display">0 g</span></h3>
+                        <div class="ingredients-blocks" id="ingredients-blocks"></div>
+                    </div>
+
+                    <!-- Macronutrienti Totali -->
+                    <div class="result-card">
+                        <h3>Macronutrienti - Totale</h3>
+                        <div class="macro-grid">
+                            <div class="macro-item">
+                                <span class="macro-label">Acqua:</span>
+                                <span class="macro-value" id="water">0 g (0%)</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Zuccheri:</span>
+                                <span class="macro-value" id="sugars">0 g (0%)</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Grassi:</span>
+                                <span class="macro-value" id="fats">0 g (0%)</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Proteine:</span>
+                                <span class="macro-value" id="proteins">0 g (0%)</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Altri Solidi:</span>
+                                <span class="macro-value" id="other-solids">0 g (0%)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Macronutrienti per 100g -->
+                    <div class="result-card">
+                        <h3>Macronutrienti - per 100g</h3>
+                        <div class="macro-grid">
+                            <div class="macro-item">
+                                <span class="macro-label">Acqua:</span>
+                                <span class="macro-value" id="water-100g">0 g (0%)</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Zuccheri:</span>
+                                <span class="macro-value" id="sugars-100g">0 g (0%)</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Grassi:</span>
+                                <span class="macro-value" id="fats-100g">0 g (0%)</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Proteine:</span>
+                                <span class="macro-value" id="proteins-100g">0 g (0%)</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Altri Solidi:</span>
+                                <span class="macro-value" id="other-solids-100g">0 g (0%)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Proprietà del Gelato -->
+                    <div class="result-card">
+                        <h3>Proprietà del Gelato</h3>
+                        <div class="properties-grid">
+                            <div class="property-item">
+                                <span class="property-label">POD (Potere Dolcificante):</span>
+                                <span class="property-value" id="pod">0</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">PAC (Potere Anticongelante):</span>
+                                <span class="property-value" id="pac">0</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">Solidi Totali:</span>
+                                <span class="property-value" id="total-solids">0% (Ideale: 36-42%)</span>
+                            </div>
+                            <div class="property-item">
+                                <span class="property-label">Grassi Totali:</span>
+                                <span class="property-value" id="total-fats-percent">0% (Ideale: 6-10%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generate-label-action" style="display: flex; gap: 15px; justify-content: center;">
+                    <button id="save-recipe-btn" class="btn-success"><i class="fas fa-save"></i> Salva Ricetta</button>
+                    <button id="print-recipe-btn" class="btn-secondary"><i class="fas fa-receipt"></i> Stampa Ricetta</button>
+                    <button id="print-label-btn" class="btn-primary"><i class="fas fa-print"></i> Stampa Etichetta</button>
+                </div>
+            </section>
+
+            <!-- Sezione Etichetta Stampabile -->
+            <section class="print-section hidden" id="print-section">
+                <h2><i class="fas fa-tag"></i> Etichetta Prodotto</h2>
+                <div id="label-container" class="label-container hidden">
+                    <div class="label-content">
+                        <div class="label-header">
+                            <img src="imgs/logo.jpg" alt="Logo Fiori Celesti" class="label-logo">
+                            <div>
+                                <h3>Fiori Celesti</h3>
+                                <p class="label-product-name" id="label-flavor-name">Gelato Artigianale</p>
+                            </div>
+                        </div>
+
+                        <div class="label-section">
+                            <h4>Ingredienti</h4>
+                            <p id="label-ingredients" class="ingredients-text"></p>
+                        </div>
+
+                        <div class="label-section">
+                            <h4>Informazioni Nutrizionali</h4>
+                            <p class="nutrition-subtitle">Valori medi per 100 g</p>
+                            <table class="nutrition-table">
+                                <tbody>
+                                    <tr>
+                                        <td class="nutrition-label">Energia</td>
+                                        <td class="nutrition-value" id="label-energy">0 kJ / 0 kcal</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="nutrition-label">Grassi</td>
+                                        <td class="nutrition-value" id="label-fats">0 g</td>
+                                    </tr>
+                                    <tr class="sub-row">
+                                        <td class="nutrition-label indent">di cui acidi grassi saturi</td>
+                                        <td class="nutrition-value" id="label-saturated">- g</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="nutrition-label">Carboidrati</td>
+                                        <td class="nutrition-value" id="label-carbs">0 g</td>
+                                    </tr>
+                                    <tr class="sub-row">
+                                        <td class="nutrition-label indent">di cui zuccheri</td>
+                                        <td class="nutrition-value" id="label-sugars">0 g</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="nutrition-label">Proteine</td>
+                                        <td class="nutrition-value" id="label-proteins">0 g</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="nutrition-label">Sale</td>
+                                        <td class="nutrition-value" id="label-salt">< 0,01 g</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="label-footer">
+                            <p>Prodotto artigianale da consumarsi preferibilmente entro pochi giorni dalla produzione.</p>
+                            <p>Conservare a -18°C</p>
+                        </div>
+
+                        <button id="print-btn" class="btn-secondary" onclick="window.print()">🖨️ Stampa Etichetta</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sezione Ricetta Stampabile -->
+            <section class="recipe-print-section hidden" id="recipe-print-section">
+                <h2><i class="fas fa-receipt"></i> Ricetta</h2>
+                <div id="recipe-container" class="recipe-container hidden">
+                    <div class="recipe-content">
+                        <div class="recipe-print-header">
+                            <img src="imgs/logo.jpg" alt="Logo Fiori Celesti" class="recipe-print-logo">
+                            <div>
+                                <h3>Fiori Celesti</h3>
+                                <h4 class="recipe-print-flavor-name" id="recipe-flavor-name">Gelato Artigianale</h4>
+                            </div>
+                        </div>
+
+                        <div class="recipe-section">
+                            <h4>Ingredienti</h4>
+                            <table class="recipe-ingredients-table" id="recipe-ingredients-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ingrediente</th>
+                                        <th>Quantità</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recipe-ingredients-body">
+                                </tbody>
+                            </table>
+                            <p class="recipe-total">Peso totale: <strong id="recipe-total-weight">0 g</strong></p>
+                        </div>
+
+                        <div class="recipe-footer">
+                            <p>Ricetta creata con Gelato Fiori Celesti</p>
+                        </div>
+
+                        <button id="print-recipe-final-btn" class="btn-secondary" onclick="window.print()">🖨️ Stampa Ricetta</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Gelato Fiori Celesti</p>
+        </footer>
+    </div>
+
+    <!-- Modale per visualizzare dati ingrediente -->
+    <div id="ingredient-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2 id="modal-ingredient-name"></h2>
+            <div class="modal-data-grid">
+                <div class="modal-data-item">
+                    <span class="modal-label">Acqua:</span>
+                    <span class="modal-value" id="modal-water"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">Zuccheri:</span>
+                    <span class="modal-value" id="modal-sugars"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">Grassi:</span>
+                    <span class="modal-value" id="modal-fats"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">Proteine (SLNG):</span>
+                    <span class="modal-value" id="modal-proteins"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">Altri solidi:</span>
+                    <span class="modal-value" id="modal-other-solids"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">POD:</span>
+                    <span class="modal-value" id="modal-pod"></span>
+                </div>
+                <div class="modal-data-item">
+                    <span class="modal-label">PAC:</span>
+                    <span class="modal-value" id="modal-pac"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="ingredientsDB.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
