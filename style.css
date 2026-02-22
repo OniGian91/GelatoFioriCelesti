@@ -376,10 +376,6 @@ a.btn-success {
     margin-bottom: 20px;
 }
 
-.history-header:hover {
-    opacity: 0.8;
-}
-
 .history-header h2 {
     margin-bottom: 0;
 }
@@ -388,6 +384,10 @@ a.btn-success {
     color: var(--primary-color);
     transition: transform 0.3s ease;
     font-size: 1.2rem;
+}
+
+.history-toggle-icon:hover {
+    opacity: 0.7;
 }
 
 .history-section.collapsed .history-toggle-icon {
@@ -406,109 +406,200 @@ a.btn-success {
 }
 
 .history-item {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-    border-radius: 10px;
-    padding: 15px;
-    cursor: pointer;
-    transition: all 0.3s;
-    position: relative;
+    background: var(--card-bg);
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 15px;
 }
 
 .history-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
-.history-item-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.history-flavor-name {
-    font-weight: 700;
-    font-size: 1.1rem;
-    color: var(--primary-color);
-}
-
-.history-date {
-    font-size: 0.85rem;
-    color: #7f8c8d;
-}
-
-.history-ingredients {
-    font-size: 0.9rem;
-    color: var(--text-color);
-}
-
-.history-ingredients-count {
-    font-weight: 600;
-    color: var(--primary-color);
-    margin-bottom: 5px;
-}
-
-.history-ingredients-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-}
-
-.history-ingredient-tag {
-    background: white;
-    padding: 3px 8px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-}
-
-.history-delete-btn {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background: rgba(231, 76, 60, 0.9);
+.history-card-header {
+    background: #2c3e50;
     color: white;
-    border: none;
-    border-radius: 4px;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 0.8rem;
-    transition: all 0.2s;
-    z-index: 10;
+    padding: 15px;
 }
 
-.history-delete-btn:hover {
-    background: #c0392b;
-    transform: scale(1.15);
+.history-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.history-title-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.history-flavor-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.history-actions {
+    display: flex;
+    gap: 8px;
 }
 
 .history-load-btn {
-    position: absolute;
-    bottom: 10px;
-    right: 64px;
-    background: rgba(39, 174, 96, 0.9);
+    background: #27ae60;
     color: white;
     border: none;
-    border-radius: 4px;
-    width: 24px;
-    height: 24px;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    font-size: 0.8rem;
-    transition: all 0.2s;
-    z-index: 10;
+    width: 32px;
+    height: 32px;
 }
 
 .history-load-btn:hover {
     background: #229954;
-    transform: scale(1.15);
+    transform: scale(1.1);
+}
+
+.history-edit-btn {
+    background: #f39c12;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+.history-edit-btn:hover {
+    background: #e67e22;
+    transform: scale(1.1);
+}
+
+.history-delete-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+.history-delete-btn:hover {
+    background: #c0392b;
+    transform: scale(1.1);
+}
+
+.history-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    opacity: 0.9;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.history-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.history-user-avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.history-weight-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.history-section {
+    padding: 15px;
+    margin-bottom: 0;
+}
+
+.history-section-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.history-ingredients-list {
+    list-style: none;
+    padding: 0;
+}
+
+.history-ingredient-item {
+    padding: 4px 8px 4px 12px;
+    background: transparent;
+    border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+    border-left: 4px solid #ccc;
+    margin-bottom: 2px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+}
+
+.history-ingredient-item:last-child {
+    border-bottom: none;
+}
+
+.history-ingredient-name {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.history-ingredient-weight {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-family: 'Courier New', monospace;
 }
 
 /* Preparation Section */

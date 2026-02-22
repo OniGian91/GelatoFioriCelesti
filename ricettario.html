@@ -131,16 +131,16 @@
             background: #27ae60;
             color: white;
             border: none;
-            padding: 10px;
+            padding: 8px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
         }
 
         .load-recipe-btn:hover {
@@ -199,9 +199,10 @@
         }
 
         .ingredient-list-item {
-            padding: 4px 8px;
+            padding: 4px 8px 4px 12px;
             background: transparent;
             border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+            border-left: 4px solid #ccc;
             margin-bottom: 2px;
             display: flex;
             justify-content: space-between;
@@ -357,20 +358,41 @@
             background: #e74c3c;
             color: white;
             border: none;
-            padding: 10px;
+            padding: 8px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
         }
 
         .delete-recipe-btn:hover {
             background: #c0392b;
+            transform: scale(1.1);
+        }
+
+        .edit-recipe-btn {
+            background: #f39c12;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+        }
+
+        .edit-recipe-btn:hover {
+            background: #e67e22;
             transform: scale(1.1);
         }
 
@@ -573,6 +595,24 @@
             displayRecipes();
         }
 
+        // Colori per gli ingredienti
+        const ingredientColors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+            '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B739', '#52B788',
+            '#FF8FA3', '#C9ADA7', '#A8DADC', '#F4A261', '#E9C46A',
+            '#2A9D8F', '#E76F51', '#8E7DBE', '#F4978E', '#84A59D'
+        ];
+
+        // Genera un colore consistente basato sul nome dell'ingrediente
+        function getIngredientColor(name) {
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const index = Math.abs(hash) % ingredientColors.length;
+            return ingredientColors[index];
+        }
+
         // Genera una card per una ricetta
         function generateRecipeCard(recipe, index) {
             const date = new Date(recipe.date);
@@ -587,16 +627,19 @@
             // Calcola i totali nutrizionali
             const totals = calculateRecipeTotals(recipe.recipe);
             
-            // Genera i blocchi degli ingredienti
-            const blocksHTML = generateIngredientsBlocks(recipe.recipe);
+            // Ordina gli ingredienti per peso (dal più pesante al più leggero)
+            const sortedIngredients = [...recipe.recipe].sort((a, b) => b.weight - a.weight);
             
-            // Genera la lista degli ingredienti
-            const ingredientsHTML = recipe.recipe.map(item => `
-                <li class="ingredient-list-item">
-                    <span class="ingredient-name">${item.name}</span>
-                    <span class="ingredient-weight">${item.weight} g</span>
-                </li>
-            `).join('');
+            // Genera la lista degli ingredienti con colori consistenti
+            const ingredientsHTML = sortedIngredients.map(item => {
+                const color = getIngredientColor(item.name);
+                return `
+                    <li class="ingredient-list-item" style="border-left-color: ${color};">
+                        <span class="ingredient-name">${item.name}</span>
+                        <span class="ingredient-weight">${item.weight} g</span>
+                    </li>
+                `;
+            }).join('');
 
             // Stato solidi totali
             const solidsStatus = getSolidsStatus(totals.totalSolidsPercent);
@@ -619,6 +662,9 @@
                             <div class="recipe-actions">
                                 <button class="load-recipe-btn" onclick="loadRecipeIntoCalculator(${index})" title="Carica questa ricetta">
                                     <i class="fas fa-blender"></i>
+                                </button>
+                                <button class="edit-recipe-btn" onclick="renameRecipe(${index})" title="Rinomina ricetta">
+                                    <i class="fas fa-edit"></i>
                                 </button>
                                 <button class="delete-recipe-btn" onclick="deleteRecipe(${index})" title="Elimina ricetta">
                                     <i class="fas fa-trash"></i>
@@ -644,15 +690,6 @@
                     </div>
                     
                     <div class="recipe-body">
-                        <!-- Visualizzazione proporzionale ingredienti -->
-                        <div class="recipe-section">
-                            <div class="recipe-section-title">
-                                <i class="fas fa-chart-bar"></i>
-                                Composizione
-                            </div>
-                            ${blocksHTML}
-                        </div>
-
                         <!-- Lista ingredienti -->
                         <div class="recipe-section">
                             <div class="recipe-section-title">
@@ -662,60 +699,6 @@
                             <ul class="ingredients-list">
                                 ${ingredientsHTML}
                             </ul>
-                        </div>
-
-                        <!-- Valori nutrizionali principali -->
-                        <div class="recipe-section">
-                            <div class="recipe-section-title">
-                                <i class="fas fa-chart-pie"></i>
-                                Macronutrienti (per 100g)
-                            </div>
-                            <div class="nutrition-grid">
-                                <div class="nutrition-item">
-                                    <div class="nutrition-label">Acqua</div>
-                                    <div class="nutrition-value">${((totals.water / totals.totalWeight) * 100).toFixed(1)} g</div>
-                                </div>
-                                <div class="nutrition-item">
-                                    <div class="nutrition-label">Zuccheri</div>
-                                    <div class="nutrition-value">${((totals.sugars / totals.totalWeight) * 100).toFixed(1)} g</div>
-                                </div>
-                                <div class="nutrition-item">
-                                    <div class="nutrition-label">Grassi</div>
-                                    <div class="nutrition-value">${((totals.fats / totals.totalWeight) * 100).toFixed(1)} g</div>
-                                </div>
-                                <div class="nutrition-item">
-                                    <div class="nutrition-label">Proteine</div>
-                                    <div class="nutrition-value">${((totals.proteins / totals.totalWeight) * 100).toFixed(1)} g</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Proprietà del gelato -->
-                        <div class="recipe-section">
-                            <div class="recipe-section-title">
-                                <i class="fas fa-thermometer-half"></i>
-                                Proprietà del Gelato
-                            </div>
-                            <div class="properties-grid">
-                                <div class="property-item">
-                                    <div class="property-label">POD</div>
-                                    <div class="property-value">${totals.pod.toFixed(1)}</div>
-                                </div>
-                                <div class="property-item">
-                                    <div class="property-label">PAC</div>
-                                    <div class="property-value">${totals.pac.toFixed(1)}</div>
-                                </div>
-                                <div class="property-item">
-                                    <div class="property-label">Solidi</div>
-                                    <div class="property-value">${totals.totalSolidsPercent.toFixed(1)}%</div>
-                                    <div class="property-status ${solidsClass}">${solidsStatus}</div>
-                                </div>
-                                <div class="property-item">
-                                    <div class="property-label">Grassi</div>
-                                    <div class="property-value">${totals.fatsPercent.toFixed(1)}%</div>
-                                    <div class="property-status ${fatsClass}">${fatsStatus}</div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -830,6 +813,27 @@
         }
 
         // Elimina una ricetta
+        // Rinomina una ricetta
+        function renameRecipe(index) {
+            const recipes = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
+            
+            if (index < 0 || index >= recipes.length) {
+                alert('Ricetta non trovata.');
+                return;
+            }
+
+            const recipe = recipes[index];
+            const newName = prompt('Inserisci il nuovo nome per il gelato:', recipe.flavorName);
+            
+            if (newName && newName.trim() !== '') {
+                recipe.flavorName = newName.trim();
+                localStorage.setItem('gelatoHistory', JSON.stringify(recipes));
+                
+                // Ricarica le ricette
+                loadRecipes();
+            }
+        }
+
         function deleteRecipe(index) {
             if (!confirm('Sei sicuro di voler eliminare questa ricetta?')) {
                 return;

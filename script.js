@@ -816,6 +816,24 @@ function saveToHistory() {
     updateHistoryDisplay();
 }
 
+// Colori per gli ingredienti (stesso array del ricettario)
+const ingredientColors = [
+    '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+    '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B739', '#52B788',
+    '#FF8FA3', '#C9ADA7', '#A8DADC', '#F4A261', '#E9C46A',
+    '#2A9D8F', '#E76F51', '#8E7DBE', '#F4978E', '#84A59D'
+];
+
+// Genera un colore consistente basato sul nome dell'ingrediente
+function getIngredientColor(name) {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % ingredientColors.length;
+    return ingredientColors[index];
+}
+
 // Aggiorna la visualizzazione dell'history
 function updateHistoryDisplay() {
     const historyList = document.getElementById('history-list');
@@ -826,43 +844,82 @@ function updateHistoryDisplay() {
         return;
     }
     
-    // Mostra solo le prime 6 ricette
-    const recentHistory = history.slice(0, 6);
+    // Mostra solo le prime 3 ricette
+    const recentHistory = history.slice(0, 3);
     
     historyList.innerHTML = recentHistory.map((entry, index) => {
         const date = new Date(entry.date);
         const dateStr = date.toLocaleDateString('it-IT', { 
             day: '2-digit', 
-            month: '2-digit', 
+            month: 'long', 
             year: 'numeric',
             hour: '2-digit',
             minute: '2-digit'
         });
         
-        const ingredientsPreview = entry.recipe.slice(0, 3).map(item => item.name).join(', ');
-        const moreCount = entry.recipe.length > 3 ? ` +${entry.recipe.length - 3}` : '';
+        // Calcola peso totale
+        const totalWeight = entry.recipe.reduce((sum, item) => sum + item.weight, 0);
+        
+        // Ordina ingredienti per peso (dal più pesante al più leggero)
+        const sortedIngredients = [...entry.recipe].sort((a, b) => b.weight - a.weight);
+        
+        // Genera la lista degli ingredienti con colori
+        const ingredientsHTML = sortedIngredients.map(item => {
+            const color = getIngredientColor(item.name);
+            return `
+                <li class="history-ingredient-item" style="border-left-color: ${color};">
+                    <span class="history-ingredient-name">${item.name}</span>
+                    <span class="history-ingredient-weight">${item.weight} g</span>
+                </li>
+            `;
+        }).join('');
         
         return `
             <div class="history-item">
-                <button class="history-load-btn" onclick="loadFromHistory(${index})" title="Carica questa ricetta">
-                    <i class="fas fa-blender"></i>
-                </button>
-                <button class="history-delete-btn" onclick="deleteFromHistory(${index}, event)" title="Elimina ricetta">
-                    <i class="fas fa-trash"></i>
-                </button>
-                <div class="history-item-header">
-                    <span class="history-flavor-name">${entry.flavorName}</span>
-                    <span class="history-date">${dateStr}</span>
+                <div class="history-card-header">
+                    <div class="history-title">
+                        <div class="history-title-text" title="${entry.flavorName}">
+                            <i class="fas fa-ice-cream" style="flex-shrink: 0;"></i>
+                            <span class="history-flavor-text">${entry.flavorName}</span>
+                        </div>
+                        <div class="history-actions">
+                            <button class="history-load-btn" onclick="loadFromHistory(${index})" title="Carica questa ricetta">
+                                <i class="fas fa-blender"></i>
+                            </button>
+                            <button class="history-edit-btn" onclick="renameRecipeFromHistory(${index})" title="Rinomina ricetta">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="history-delete-btn" onclick="deleteFromHistory(${index}, event)" title="Elimina ricetta">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="history-meta">
+                        <div class="history-meta-item">
+                            <img src="imgs/${entry.userName}.png" onerror="this.src='imgs/logged_user.png'" class="history-user-avatar" alt="${entry.userName}">
+                            ${entry.userName}
+                        </div>
+                        <div class="history-meta-item">
+                            <i class="fas fa-calendar"></i>
+                            ${dateStr}
+                        </div>
+                        <div class="history-meta-item">
+                            <span class="history-weight-badge">
+                                <i class="fas fa-weight"></i>
+                                ${totalWeight.toFixed(1)} g
+                            </span>
+                        </div>
+                    </div>
                 </div>
-                <div class="history-ingredients">
-                    <div class="history-ingredients-count">
-                        <i class="fas fa-list"></i> ${entry.recipe.length} ingredienti
+                
+                <div class="history-section">
+                    <div class="history-section-title">
+                        <i class="fas fa-list"></i>
+                        Ingredienti (${entry.recipe.length})
                     </div>
-                    <div class="history-ingredients-list">
-                        ${entry.recipe.map(item => `
-                            <span class="history-ingredient-tag">${item.name}: ${item.weight}g</span>
-                        `).join('')}
-                    </div>
+                    <ul class="history-ingredients-list">
+                        ${ingredientsHTML}
+                    </ul>
                 </div>
             </div>
         `;
@@ -904,6 +961,26 @@ function loadFromHistory(index) {
         
         // Scroll alla sezione preparazione
         document.querySelector('.preparation-section').scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// Elimina una ricetta dall'history
+// Rinomina una ricetta dall'history
+function renameRecipeFromHistory(index) {
+    const history = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
+    
+    if (index < 0 || index >= history.length) {
+        alert('Ricetta non trovata nell\'archivio.');
+        return;
+    }
+
+    const entry = history[index];
+    const newName = prompt('Inserisci il nuovo nome per il gelato:', entry.flavorName);
+    
+    if (newName && newName.trim() !== '') {
+        entry.flavorName = newName.trim();
+        localStorage.setItem('gelatoHistory', JSON.stringify(history));
+        updateHistoryDisplay();
     }
 }
 
