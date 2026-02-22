@@ -56,6 +56,34 @@
             border-color: rgba(255, 255, 255, 0.8);
         }
 
+        .btn-rename-title.btn-confirm {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            border-color: #27ae60;
+        }
+
+        .btn-rename-title.btn-confirm:hover {
+            background: linear-gradient(135deg, #229954 0%, #1e8449 100%);
+        }
+
+        .recipe-name-input {
+            font-size: 2rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--text-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 8px 12px;
+            outline: none;
+            font-family: inherit;
+            min-width: 300px;
+            max-width: 600px;
+        }
+
+        .recipe-name-input:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
         .recipe-metadata {
             display: flex;
             gap: 25px;
@@ -431,8 +459,9 @@
                     <h1 class="recipe-title-main">
                         <i class="fas fa-ice-cream"></i>
                         <span id="recipe-name-display">Caricamento...</span>
+                        <input type="text" id="recipe-name-input" class="recipe-name-input" style="display: none;">
                         <button class="btn-rename-title" id="rename-btn" title="Rinomina ricetta">
-                            <i class="fas fa-edit"></i>Rinomina
+                            <i class="fas fa-edit"></i><span id="rename-btn-text">Rinomina</span>
                         </button>
                     </h1>
                     <div class="recipe-metadata" id="recipe-metadata">
@@ -643,7 +672,7 @@
             if (savedUser) {
                 document.getElementById('username-display').textContent = savedUser;
                 const userIcon = document.querySelector('.user-icon');
-                userIcon.src = `imgs/${savedUser}.png`;
+                userIcon.src = `imgs/${savedUser.toLowerCase()}.png`;
                 userIcon.onerror = function() { this.src = 'imgs/logged_user.png'; };
                 document.getElementById('user-info').classList.remove('hidden');
             } else {
@@ -814,7 +843,21 @@
 
             // Pulsante Rinomina
             document.getElementById('rename-btn').addEventListener('click', () => {
-                renameRecipe();
+                toggleRenameMode();
+            });
+            
+            // Permetti di premere Enter per confermare il nuovo nome
+            document.getElementById('recipe-name-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    toggleRenameMode();
+                }
+            });
+            
+            // Permetti di premere ESC per annullare l'editing
+            document.getElementById('recipe-name-input').addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    cancelRenameMode();
+                }
             });
 
             // Pulsanti Stampa
@@ -950,8 +993,51 @@
             }, 100);
         }
 
-        // Rinomina la ricetta
-        function renameRecipe() {
+        // Variabile per tracciare lo stato di editing
+        let isEditingName = false;
+
+        // Toggle modalità rinomina
+        function toggleRenameMode() {
+            const display = document.getElementById('recipe-name-display');
+            const input = document.getElementById('recipe-name-input');
+            const btn = document.getElementById('rename-btn');
+            const btnText = document.getElementById('rename-btn-text');
+            const btnIcon = btn.querySelector('i');
+            
+            if (!isEditingName) {
+                // Entra in modalità editing
+                isEditingName = true;
+                const currentName = display.textContent;
+                input.value = currentName;
+                display.style.display = 'none';
+                input.style.display = 'inline';
+                input.focus();
+                input.select();
+                
+                // Cambia il pulsante in "Conferma"
+                btnIcon.className = 'fas fa-check';
+                btnText.textContent = 'Conferma';
+                btn.classList.add('btn-confirm');
+            } else {
+                // Salva e esci dalla modalità editing
+                const newName = input.value.trim();
+                
+                if (newName && newName !== '') {
+                    saveRecipeName(newName);
+                }
+                
+                // Torna alla modalità normale
+                isEditingName = false;
+                display.style.display = 'inline';
+                input.style.display = 'none';
+                btnIcon.className = 'fas fa-edit';
+                btnText.textContent = 'Rinomina';
+                btn.classList.remove('btn-confirm');
+            }
+        }
+        
+        // Salva il nuovo nome della ricetta
+        function saveRecipeName(newName) {
             const urlParams = new URLSearchParams(window.location.search);
             const recipeIndex = parseInt(urlParams.get('index'));
             const recipes = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
@@ -962,15 +1048,35 @@
             }
 
             const recipe = recipes[recipeIndex];
-            const newName = prompt('Inserisci il nuovo nome per il gelato:', recipe.flavorName);
+            recipe.flavorName = newName;
+            localStorage.setItem('gelatoHistory', JSON.stringify(recipes));
             
-            if (newName && newName.trim() !== '') {
-                recipe.flavorName = newName.trim();
-                localStorage.setItem('gelatoHistory', JSON.stringify(recipes));
-                
-                // Ricarica la pagina per mostrare il nuovo nome
-                location.reload();
-            }
+            // Aggiorna il display
+            document.getElementById('recipe-name-display').textContent = newName;
+            
+            // Aggiorna anche il loader URL se presente
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('name', encodeURIComponent(newName));
+            window.history.replaceState({}, '', currentUrl);
+        }
+
+        // Annulla la modalità editing senza salvare
+        function cancelRenameMode() {
+            if (!isEditingName) return;
+            
+            const display = document.getElementById('recipe-name-display');
+            const input = document.getElementById('recipe-name-input');
+            const btn = document.getElementById('rename-btn');
+            const btnText = document.getElementById('rename-btn-text');
+            const btnIcon = btn.querySelector('i');
+            
+            // Torna alla modalità normale senza salvare
+            isEditingName = false;
+            display.style.display = 'inline';
+            input.style.display = 'none';
+            btnIcon.className = 'fas fa-edit';
+            btnText.textContent = 'Rinomina';
+            btn.classList.remove('btn-confirm');
         }
 
         // Mostra l'etichetta per la stampa

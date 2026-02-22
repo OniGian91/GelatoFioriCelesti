@@ -346,7 +346,7 @@
             if (savedUser) {
                 document.getElementById('username-display').textContent = savedUser;
                 const userIcon = document.querySelector('.user-icon');
-                userIcon.src = `imgs/${savedUser}.png`;
+                userIcon.src = `imgs/${savedUser.toLowerCase()}.png`;
                 userIcon.onerror = function() { this.src = 'imgs/logged_user.png'; };
                 document.getElementById('user-info').classList.remove('hidden');
                 document.getElementById('no-user-info').classList.add('hidden');
