@@ -36,7 +36,8 @@
     ],
     "win": {
       "target": "nsis",
-      "icon": "imgs/icon.ico"
+      "icon": "imgs/icon.ico",
+      "signAndEditExecutable": false
     },
     "mac": {
       "target": "dmg",
@@ -46,5 +47,8 @@
       "target": "AppImage",
       "icon": "imgs/logo.jpg"
     }
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.2.0"
   }
 }

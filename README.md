@@ -65,6 +65,7 @@ Gli eseguibili saranno disponibili nella cartella `dist/`.
 - 🖨️ Stampa etichette e ricette
 - 🔊 Feedback sonori per le azioni
 - 🎨 Interfaccia moderna e intuitiva
+- 🌐 Funzionamento completamente offline (nessuna connessione internet richiesta)
 
 ## 🛠️ Tecnologie
 
@@ -72,6 +73,7 @@ Gli eseguibili saranno disponibili nella cartella `dist/`.
 - Electron (per versione desktop)
 - Web Audio API
 - LocalStorage API
+- FontAwesome 6.5.1 (bundled localmente)
 
 ## 📄 Licenza
 
