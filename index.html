@@ -283,16 +283,46 @@
         </div>
     </div>
 
+    <!-- Modale input -->
+    <div id="input-modal" class="modal">
+        <div class="modal-content input-modal-content">
+            <h2 id="input-modal-title"><i class="fas fa-edit"></i> Inserisci</h2>
+            <p id="input-modal-message"></p>
+            <input type="text" id="input-modal-input" placeholder="">
+            <div class="input-modal-buttons">
+                <button id="input-modal-cancel" class="btn-secondary">
+                    <i class="fas fa-times"></i> Annulla
+                </button>
+                <button id="input-modal-confirm" class="btn-primary">
+                    <i class="fas fa-check"></i> Conferma
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale alert -->
+    <div id="alert-modal" class="modal">
+        <div class="modal-content alert-modal-content">
+            <h2 id="alert-modal-title"><i class="fas fa-info-circle"></i> Attenzione</h2>
+            <p id="alert-modal-message"></p>
+            <div class="alert-modal-buttons">
+                <button id="alert-modal-ok" class="btn-primary">
+                    <i class="fas fa-check"></i> OK
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="ingredientsDB.js"></script>
     <script src="script.js"></script>
     <script>
         // Gestisci il login per la home page
-        function handleLoginHome() {
+        async function handleLoginHome() {
             const input = document.getElementById('username-input');
             const username = input.value.trim();
             
             if (!username) {
-                alert('Inserisci il tuo nome per continuare.');
+                await showAlertModal('Inserisci il tuo nome per continuare.');
                 input.focus();
                 return;
             }
@@ -313,8 +343,9 @@
             updateHistoryDisplay();
         }
         
-        function handleLogoutHome() {
-            if (confirm('Vuoi effettuare il logout?')) {
+        async function handleLogoutHome() {
+            const confirmed = await showConfirmModal('Vuoi effettuare il logout?');
+            if (confirmed) {
                 localStorage.removeItem('gelatoUserName');
                 location.reload();
             }
@@ -444,16 +475,16 @@
         }
         
         // Funzione per rinominare una ricetta
-        function renameRecipeFromHistory(index) {
+        async function renameRecipeFromHistory(index) {
             const recipes = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
             
             if (index < 0 || index >= recipes.length) {
-                alert('Ricetta non trovata.');
+                await showAlertModal('Ricetta non trovata.');
                 return;
             }
 
             const recipe = recipes[index];
-            const newName = prompt('Inserisci il nuovo nome per il gelato:', recipe.flavorName);
+            const newName = await showInputModal('Inserisci il nuovo nome per il gelato:', recipe.flavorName);
             
             if (newName && newName.trim() !== '') {
                 recipe.flavorName = newName.trim();
@@ -461,6 +492,10 @@
                 
                 // Ricarica le ricette
                 updateHistoryDisplay();
+                
+                // Conferma visiva e sonora
+                playBeep(800);
+                showConfirmation('Ricetta rinominata con successo!', 'add');
             }
         }
 
@@ -542,6 +577,98 @@
                 
                 confirmBtn.addEventListener('click', handleConfirm);
                 cancelBtn.addEventListener('click', handleCancel);
+                modal.addEventListener('click', handleOutsideClick);
+            });
+        }
+
+        // Mostra modal per input di testo
+        function showInputModal(message, defaultValue = '') {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('input-modal');
+                const messageEl = document.getElementById('input-modal-message');
+                const inputEl = document.getElementById('input-modal-input');
+                const confirmBtn = document.getElementById('input-modal-confirm');
+                const cancelBtn = document.getElementById('input-modal-cancel');
+                
+                messageEl.textContent = message;
+                inputEl.value = defaultValue;
+                modal.style.display = 'block';
+                
+                // Focus sull'input e seleziona il testo
+                setTimeout(() => {
+                    inputEl.focus();
+                    inputEl.select();
+                }, 100);
+                
+                const handleConfirm = () => {
+                    const value = inputEl.value.trim();
+                    modal.style.display = 'none';
+                    cleanup();
+                    resolve(value || null);
+                };
+                
+                const handleCancel = () => {
+                    modal.style.display = 'none';
+                    cleanup();
+                    resolve(null);
+                };
+                
+                const cleanup = () => {
+                    confirmBtn.removeEventListener('click', handleConfirm);
+                    cancelBtn.removeEventListener('click', handleCancel);
+                    inputEl.removeEventListener('keypress', handleKeyPress);
+                    modal.removeEventListener('click', handleOutsideClick);
+                };
+                
+                const handleKeyPress = (e) => {
+                    if (e.key === 'Enter') {
+                        handleConfirm();
+                    } else if (e.key === 'Escape') {
+                        handleCancel();
+                    }
+                };
+                
+                const handleOutsideClick = (e) => {
+                    if (e.target === modal) {
+                        handleCancel();
+                    }
+                };
+                
+                confirmBtn.addEventListener('click', handleConfirm);
+                cancelBtn.addEventListener('click', handleCancel);
+                inputEl.addEventListener('keypress', handleKeyPress);
+                modal.addEventListener('click', handleOutsideClick);
+            });
+        }
+
+        // Mostra modal per alert
+        function showAlertModal(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('alert-modal');
+                const messageEl = document.getElementById('alert-modal-message');
+                const okBtn = document.getElementById('alert-modal-ok');
+                
+                messageEl.textContent = message;
+                modal.style.display = 'block';
+                
+                const handleOk = () => {
+                    modal.style.display = 'none';
+                    cleanup();
+                    resolve();
+                };
+                
+                const cleanup = () => {
+                    okBtn.removeEventListener('click', handleOk);
+                    modal.removeEventListener('click', handleOutsideClick);
+                };
+                
+                const handleOutsideClick = (e) => {
+                    if (e.target === modal) {
+                        handleOk();
+                    }
+                };
+                
+                okBtn.addEventListener('click', handleOk);
                 modal.addEventListener('click', handleOutsideClick);
             });
         }

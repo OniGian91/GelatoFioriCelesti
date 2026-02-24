@@ -131,10 +131,25 @@ function setupEventListeners() {
         });
     }
     
+    // Event listener per chiudere la modale lista ingredienti cliccando fuori
+    const ingredientsListModal = document.getElementById('ingredients-list-modal');
+    if (ingredientsListModal) {
+        window.addEventListener('click', (e) => {
+            if (e.target === ingredientsListModal) {
+                closeIngredientsListModal();
+            }
+        });
+    }
+    
     // Chiudi il modale con ESC
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal && modal.style.display === 'block') {
-            closeIngredientModal();
+        if (e.key === 'Escape') {
+            if (modal && modal.style.display === 'block') {
+                closeIngredientModal();
+            }
+            if (ingredientsListModal && ingredientsListModal.style.display === 'block') {
+                closeIngredientsListModal();
+            }
         }
     });
     
@@ -171,12 +186,12 @@ function setupEventListeners() {
 }
 
 // Gestisce il login dell'utente
-function handleLogin() {
+async function handleLogin() {
     const input = document.getElementById('username-input');
     const username = input.value.trim();
     
     if (!username) {
-        alert('Inserisci il tuo nome per continuare.');
+        await showAlertModal('Inserisci il tuo nome per continuare.');
         input.focus();
         return;
     }
@@ -207,8 +222,9 @@ function handleLogin() {
 }
 
 // Gestisce il logout dell'utente
-function handleLogout() {
-    if (confirm('Vuoi effettuare il logout? Tutti i dati della ricetta corrente verranno persi.')) {
+async function handleLogout() {
+    const confirmed = await showConfirmModal('Vuoi effettuare il logout? Tutti i dati della ricetta corrente verranno persi.');
+    if (confirmed) {
         // Rimuovi il dato da localStorage
         localStorage.removeItem('gelatoUserName');
         
@@ -315,12 +331,12 @@ function showHistorySection() {
 }
 
 // Conferma il nome del gusto e mostra le sezioni di lavoro
-function confirmFlavorName() {
+async function confirmFlavorName() {
     const input = document.getElementById('flavor-name-input');
     const name = input.value.trim();
     
     if (!name) {
-        alert('Inserisci il nome del gusto per continuare.');
+        await showAlertModal('Inserisci il nome del gusto per continuare.');
         input.focus();
         return;
     }
@@ -338,8 +354,8 @@ function confirmFlavorName() {
 }
 
 // Modifica il nome del gusto
-function editFlavorName() {
-    const newName = prompt('Inserisci il nuovo nome del gusto:', flavorName);
+async function editFlavorName() {
+    const newName = await showInputModal('Inserisci il nuovo nome del gusto:', flavorName);
     
     if (newName && newName.trim()) {
         flavorName = newName.trim();
@@ -424,7 +440,7 @@ function showConfirmation(message, type = 'success') {
 }
 
 // Aggiungi un ingrediente alla ricetta
-function addIngredient() {
+async function addIngredient() {
     const select = document.getElementById('ingredient-select');
     const weightInput = document.getElementById('weight-input');
     
@@ -432,12 +448,12 @@ function addIngredient() {
     const weight = parseFloat(weightInput.value);
     
     if (!ingredientName) {
-        alert('Seleziona un ingrediente!');
+        await showAlertModal('Seleziona un ingrediente!');
         return;
     }
     
     if (!weight || weight <= 0) {
-        alert('Inserisci un peso valido!');
+        await showAlertModal('Inserisci un peso valido!');
         return;
     }
     
@@ -756,10 +772,102 @@ function showConfirmModal(message) {
     });
 }
 
+// Mostra modal per input di testo
+function showInputModal(message, defaultValue = '') {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('input-modal');
+        const messageEl = document.getElementById('input-modal-message');
+        const inputEl = document.getElementById('input-modal-input');
+        const confirmBtn = document.getElementById('input-modal-confirm');
+        const cancelBtn = document.getElementById('input-modal-cancel');
+        
+        messageEl.textContent = message;
+        inputEl.value = defaultValue;
+        modal.style.display = 'block';
+        
+        // Focus sull'input e seleziona il testo
+        setTimeout(() => {
+            inputEl.focus();
+            inputEl.select();
+        }, 100);
+        
+        const handleConfirm = () => {
+            const value = inputEl.value.trim();
+            modal.style.display = 'none';
+            cleanup();
+            resolve(value || null);
+        };
+        
+        const handleCancel = () => {
+            modal.style.display = 'none';
+            cleanup();
+            resolve(null);
+        };
+        
+        const cleanup = () => {
+            confirmBtn.removeEventListener('click', handleConfirm);
+            cancelBtn.removeEventListener('click', handleCancel);
+            inputEl.removeEventListener('keypress', handleKeyPress);
+            modal.removeEventListener('click', handleOutsideClick);
+        };
+        
+        const handleKeyPress = (e) => {
+            if (e.key === 'Enter') {
+                handleConfirm();
+            } else if (e.key === 'Escape') {
+                handleCancel();
+            }
+        };
+        
+        const handleOutsideClick = (e) => {
+            if (e.target === modal) {
+                handleCancel();
+            }
+        };
+        
+        confirmBtn.addEventListener('click', handleConfirm);
+        cancelBtn.addEventListener('click', handleCancel);
+        inputEl.addEventListener('keypress', handleKeyPress);
+        modal.addEventListener('click', handleOutsideClick);
+    });
+}
+
+// Mostra modal per alert
+function showAlertModal(message) {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('alert-modal');
+        const messageEl = document.getElementById('alert-modal-message');
+        const okBtn = document.getElementById('alert-modal-ok');
+        
+        messageEl.textContent = message;
+        modal.style.display = 'block';
+        
+        const handleOk = () => {
+            modal.style.display = 'none';
+            cleanup();
+            resolve();
+        };
+        
+        const cleanup = () => {
+            okBtn.removeEventListener('click', handleOk);
+            modal.removeEventListener('click', handleOutsideClick);
+        };
+        
+        const handleOutsideClick = (e) => {
+            if (e.target === modal) {
+                handleOk();
+            }
+        };
+        
+        okBtn.addEventListener('click', handleOk);
+        modal.addEventListener('click', handleOutsideClick);
+    });
+}
+
 // Salva la ricetta (con controllo sovrascrittura)
 async function saveRecipe() {
     if (recipe.length === 0) {
-        alert('Aggiungi almeno un ingrediente prima di salvare la ricetta!');
+        await showAlertModal('Aggiungi almeno un ingrediente prima di salvare la ricetta!');
         return;
     }
 
@@ -809,9 +917,9 @@ async function saveRecipe() {
 }
 
 // Mostra l'etichetta per la stampa
-function showPrintLabel() {
+async function showPrintLabel() {
     if (recipe.length === 0) {
-        alert('Aggiungi almeno un ingrediente prima di stampare l\'etichetta!');
+        await showAlertModal('Aggiungi almeno un ingrediente prima di stampare l\'etichetta!');
         return;
     }
     
@@ -865,9 +973,9 @@ function showPrintLabel() {
 }
 
 // Mostra la ricetta per la stampa
-function showPrintRecipe() {
+async function showPrintRecipe() {
     if (recipe.length === 0) {
-        alert('Aggiungi almeno un ingrediente prima di stampare la ricetta!');
+        await showAlertModal('Aggiungi almeno un ingrediente prima di stampare la ricetta!');
         return;
     }
     
@@ -907,9 +1015,9 @@ function showPrintRecipe() {
 }
 
 // Genera etichetta (legacy - manteniamo per compatibilità)
-function generateLabel() {
+async function generateLabel() {
     if (recipe.length === 0) {
-        alert('Aggiungi almeno un ingrediente prima di generare l\'etichetta!');
+        await showAlertModal('Aggiungi almeno un ingrediente prima di generare l\'etichetta!');
         return;
     }
     
@@ -991,6 +1099,90 @@ function showIngredientModal(ingredientName) {
 function closeIngredientModal() {
     const modal = document.getElementById('ingredient-modal');
     modal.style.display = 'none';
+}
+
+// Mostra la modale con lista completa ingredienti
+function showIngredientsListModal() {
+    const modal = document.getElementById('ingredients-list-modal');
+    const grid = document.getElementById('ingredients-grid');
+    const searchInput = document.getElementById('ingredients-search-input');
+    
+    // Popola la griglia con tutti gli ingredienti
+    populateIngredientsGrid();
+    
+    // Mostra la modale
+    modal.style.display = 'block';
+    
+    // Focus sulla ricerca
+    setTimeout(() => searchInput.focus(), 100);
+    
+    // Event listener per la ricerca (solo se non già presente)
+    if (!searchInput.hasAttribute('data-listener-added')) {
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            populateIngredientsGrid(searchTerm);
+        });
+        searchInput.setAttribute('data-listener-added', 'true');
+    }
+}
+
+// Chiudi la modale lista ingredienti
+function closeIngredientsListModal() {
+    const modal = document.getElementById('ingredients-list-modal');
+    const searchInput = document.getElementById('ingredients-search-input');
+    modal.style.display = 'none';
+    searchInput.value = ''; // Reset ricerca
+}
+
+// Popola la griglia con gli ingredienti (con filtro opzionale)
+function populateIngredientsGrid(searchTerm = '') {
+    const grid = document.getElementById('ingredients-grid');
+    grid.innerHTML = '';
+    
+    // Filtra gli ingredienti in base al termine di ricerca
+    const filteredIngredients = Object.entries(ingredientsDB).filter(([name, data]) => {
+        return name.toLowerCase().includes(searchTerm);
+    });
+    
+    // Ordina alfabeticamente
+    filteredIngredients.sort((a, b) => a[0].localeCompare(b[0]));
+    
+    // Se non ci sono risultati
+    if (filteredIngredients.length === 0) {
+        grid.innerHTML = '<p style="text-align: center; padding: 40px; color: #999; grid-column: 1 / -1;">Nessun ingrediente trovato</p>';
+        return;
+    }
+    
+    // Crea una card per ogni ingrediente
+    filteredIngredients.forEach(([name, data]) => {
+        const card = document.createElement('div');
+        card.className = 'ingredient-card';
+        
+        const imageName = data.img || 'default';
+        
+        card.innerHTML = `
+            <img src="imgs/ingredients/${imageName}.png" alt="${name}" onerror="this.src='imgs/ingredients/default.png'">
+            <h3>${name}</h3>
+            <div class="ingredient-stats">
+                <span class="stat-badge water">Acqua ${data.water.toFixed(1)}%</span>
+                <span class="stat-badge sugars">Zuccheri ${data.sugars.toFixed(1)}%</span>
+                <span class="stat-badge fats">Grassi ${data.fats.toFixed(1)}%</span>
+            </div>
+        `;
+        
+        // Click sulla card per selezionare l'ingrediente
+        card.addEventListener('click', () => {
+            closeIngredientsListModal();
+            // Seleziona l'ingrediente nella dropdown
+            const ingredientSelect = document.getElementById('ingredient-select');
+            ingredientSelect.value = name;
+            // Dai il focus al campo peso
+            const weightInput = document.getElementById('weight-input');
+            weightInput.focus();
+        });
+        
+        grid.appendChild(card);
+    });
 }
 
 // Salva la ricetta corrente nell'history
@@ -1135,16 +1327,17 @@ function updateHistoryDisplay() {
 }
 
 // Carica una ricetta dall'history
-function loadFromHistory(index) {
+async function loadFromHistory(index) {
     const history = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
     const entry = history[index];
     
     if (!entry) {
-        alert('Ricetta non trovata nell\'archivio.');
+        await showAlertModal('Ricetta non trovata nell\'archivio.');
         return;
     }
     
-    if (confirm(`Vuoi caricare la ricetta "${entry.flavorName}"? La ricetta corrente verrà sostituita.`)) {
+    const confirmed = await showConfirmModal(`Vuoi caricare la ricetta "${entry.flavorName}"? La ricetta corrente verrà sostituita.`);
+    if (confirmed) {
         // Carica la ricetta
         recipe = JSON.parse(JSON.stringify(entry.recipe)); // Deep copy
         flavorName = entry.flavorName;
@@ -1174,21 +1367,25 @@ function loadFromHistory(index) {
 
 // Elimina una ricetta dall'history
 // Rinomina una ricetta dall'history
-function renameRecipeFromHistory(index) {
+async function renameRecipeFromHistory(index) {
     const history = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
     
     if (index < 0 || index >= history.length) {
-        alert('Ricetta non trovata nell\'archivio.');
+        await showAlertModal('Ricetta non trovata nell\'archivio.');
         return;
     }
 
     const entry = history[index];
-    const newName = prompt('Inserisci il nuovo nome per il gelato:', entry.flavorName);
+    const newName = await showInputModal('Inserisci il nuovo nome per il gelato:', entry.flavorName);
     
     if (newName && newName.trim() !== '') {
         entry.flavorName = newName.trim();
         localStorage.setItem('gelatoHistory', JSON.stringify(history));
         updateHistoryDisplay();
+        
+        // Conferma visiva e sonora
+        playBeep(800);
+        showConfirmation('Ricetta rinominata con successo!', 'add');
     }
 }
 
@@ -1200,7 +1397,7 @@ async function deleteFromHistory(index, event) {
     const entry = history[index];
     
     if (!entry) {
-        alert('Ricetta non trovata nell\'archivio.');
+        await showAlertModal('Ricetta non trovata nell\'archivio.');
         return;
     }
     

@@ -648,6 +648,35 @@
         </footer>
     </div>
 
+    <!-- Modale conferma -->
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content confirm-modal-content">
+            <h2 id="confirm-modal-title"><i class="fas fa-exclamation-circle"></i> Conferma</h2>
+            <p id="confirm-modal-message"></p>
+            <div class="confirm-modal-buttons">
+                <button id="confirm-modal-cancel" class="btn-secondary">
+                    <i class="fas fa-times"></i> Annulla
+                </button>
+                <button id="confirm-modal-confirm" class="btn-primary">
+                    <i class="fas fa-check"></i> Conferma
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale alert -->
+    <div id="alert-modal" class="modal">
+        <div class="modal-content alert-modal-content">
+            <h2 id="alert-modal-title"><i class="fas fa-info-circle"></i> Attenzione</h2>
+            <p id="alert-modal-message"></p>
+            <div class="alert-modal-buttons">
+                <button id="alert-modal-ok" class="btn-primary">
+                    <i class="fas fa-check"></i> OK
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="ingredientsDB.js"></script>
     <script>
         // Colori per gli ingredienti
@@ -667,7 +696,7 @@
             return ingredientColors[index];
         }
 
-        function checkSavedUser() {
+        async function checkSavedUser() {
             const savedUser = localStorage.getItem('gelatoUserName');
             if (savedUser) {
                 document.getElementById('username-display').textContent = savedUser;
@@ -676,26 +705,97 @@
                 userIcon.onerror = function() { this.src = 'imgs/logged_user.png'; };
                 document.getElementById('user-info').classList.remove('hidden');
             } else {
-                alert('Devi effettuare il login per visualizzare le ricette. Torna alla home page.');
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1000);
+                await showAlertModal('Devi effettuare il login per visualizzare le ricette. Torna alla home page.');
+                window.location.href = 'index.html';
             }
         }
 
-        function handleLogout() {
-            if (confirm('Vuoi effettuare il logout?')) {
+        // Modal Functions
+        function showConfirmModal(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('confirm-modal');
+                const modalMessage = document.getElementById('confirm-modal-message');
+                const confirmBtn = document.getElementById('confirm-modal-confirm');
+                const cancelBtn = document.getElementById('confirm-modal-cancel');
+                
+                modalMessage.textContent = message;
+                modal.style.display = 'block';
+                
+                const handleConfirm = () => {
+                    modal.style.display = 'none';
+                    cleanup();
+                    resolve(true);
+                };
+                
+                const handleCancel = () => {
+                    modal.style.display = 'none';
+                    cleanup();
+                    resolve(false);
+                };
+                
+                const handleClickOutside = (event) => {
+                    if (event.target === modal) {
+                        handleCancel();
+                    }
+                };
+                
+                const cleanup = () => {
+                    confirmBtn.removeEventListener('click', handleConfirm);
+                    cancelBtn.removeEventListener('click', handleCancel);
+                    modal.removeEventListener('click', handleClickOutside);
+                };
+                
+                confirmBtn.addEventListener('click', handleConfirm);
+                cancelBtn.addEventListener('click', handleCancel);
+                modal.addEventListener('click', handleClickOutside);
+            });
+        }
+
+        function showAlertModal(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('alert-modal');
+                const modalMessage = document.getElementById('alert-modal-message');
+                const okBtn = document.getElementById('alert-modal-ok');
+                
+                modalMessage.textContent = message;
+                modal.style.display = 'block';
+                
+                const handleOk = () => {
+                    modal.style.display = 'none';
+                    cleanup();
+                    resolve();
+                };
+                
+                const handleClickOutside = (event) => {
+                    if (event.target === modal) {
+                        handleOk();
+                    }
+                };
+                
+                const cleanup = () => {
+                    okBtn.removeEventListener('click', handleOk);
+                    modal.removeEventListener('click', handleClickOutside);
+                };
+                
+                okBtn.addEventListener('click', handleOk);
+                modal.addEventListener('click', handleClickOutside);
+            });
+        }
+
+        async function handleLogout() {
+            const confirmed = await showConfirmModal('Vuoi effettuare il logout?');
+            if (confirmed) {
                 localStorage.removeItem('gelatoUserName');
                 window.location.href = 'index.html';
             }
         }
 
-        function loadRecipe() {
+        async function loadRecipe() {
             const urlParams = new URLSearchParams(window.location.search);
             const recipeIndex = parseInt(urlParams.get('index'));
 
             if (isNaN(recipeIndex)) {
-                alert('Ricetta non trovata!');
+                await showAlertModal('Ricetta non trovata!');
                 window.location.href = 'ricettario.html';
                 return;
             }
@@ -704,7 +804,7 @@
             const recipe = history[recipeIndex];
 
             if (!recipe) {
-                alert('Ricetta non trovata!');
+                await showAlertModal('Ricetta non trovata!');
                 window.location.href = 'ricettario.html';
                 return;
             }
@@ -871,14 +971,14 @@
         }
 
         // Mostra e stampa l'etichetta
-        function showPrintLabelAndPrint() {
+        async function showPrintLabelAndPrint() {
             const urlParams = new URLSearchParams(window.location.search);
             const recipeIndex = parseInt(urlParams.get('index'));
             const history = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
             const recipe = history[recipeIndex];
 
             if (!recipe) {
-                alert('Ricetta non trovata!');
+                await showAlertModal('Ricetta non trovata!');
                 return;
             }
 
@@ -939,14 +1039,14 @@
         }
 
         // Mostra e stampa la ricetta
-        function showPrintRecipeAndPrint() {
+        async function showPrintRecipeAndPrint() {
             const urlParams = new URLSearchParams(window.location.search);
             const recipeIndex = parseInt(urlParams.get('index'));
             const history = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
             const recipe = history[recipeIndex];
 
             if (!recipe) {
-                alert('Ricetta non trovata!');
+                await showAlertModal('Ricetta non trovata!');
                 return;
             }
 
@@ -1037,13 +1137,13 @@
         }
         
         // Salva il nuovo nome della ricetta
-        function saveRecipeName(newName) {
+        async function saveRecipeName(newName) {
             const urlParams = new URLSearchParams(window.location.search);
             const recipeIndex = parseInt(urlParams.get('index'));
             const recipes = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
             
             if (isNaN(recipeIndex) || recipeIndex < 0 || recipeIndex >= recipes.length) {
-                alert('Ricetta non trovata.');
+                await showAlertModal('Ricetta non trovata.');
                 return;
             }
 
@@ -1080,14 +1180,14 @@
         }
 
         // Mostra l'etichetta per la stampa
-        function showPrintLabel() {
+        async function showPrintLabel() {
             const urlParams = new URLSearchParams(window.location.search);
             const recipeIndex = parseInt(urlParams.get('index'));
             const history = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
             const recipe = history[recipeIndex];
 
             if (!recipe) {
-                alert('Ricetta non trovata!');
+                await showAlertModal('Ricetta non trovata!');
                 return;
             }
 
@@ -1140,14 +1240,14 @@
         }
 
         // Mostra la ricetta per la stampa
-        function showPrintRecipe() {
+        async function showPrintRecipe() {
             const urlParams = new URLSearchParams(window.location.search);
             const recipeIndex = parseInt(urlParams.get('index'));
             const history = JSON.parse(localStorage.getItem('gelatoHistory') || '[]');
             const recipe = history[recipeIndex];
 
             if (!recipe) {
-                alert('Ricetta non trovata!');
+                await showAlertModal('Ricetta non trovata!');
                 return;
             }
 

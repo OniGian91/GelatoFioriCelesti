@@ -288,6 +288,35 @@
         </div>
     </div>
 
+    <!-- Modale conferma -->
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content confirm-modal-content">
+            <h2 id="confirm-modal-title"><i class="fas fa-exclamation-circle"></i> Conferma</h2>
+            <p id="confirm-modal-message"></p>
+            <div class="confirm-modal-buttons">
+                <button id="confirm-modal-cancel" class="btn-secondary">
+                    <i class="fas fa-times"></i> Annulla
+                </button>
+                <button id="confirm-modal-confirm" class="btn-primary">
+                    <i class="fas fa-check"></i> Conferma
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale alert -->
+    <div id="alert-modal" class="modal">
+        <div class="modal-content alert-modal-content">
+            <h2 id="alert-modal-title"><i class="fas fa-info-circle"></i> Attenzione</h2>
+            <p id="alert-modal-message"></p>
+            <div class="alert-modal-buttons">
+                <button id="alert-modal-ok" class="btn-primary">
+                    <i class="fas fa-check"></i> OK
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="ingredientsDB.js"></script>
     <script>
         // Popola la tabella con tutti gli ingredienti
@@ -340,7 +369,7 @@
         }
         
         // Controlla se c'è un utente salvato
-        function checkSavedUser() {
+        async function checkSavedUser() {
             const savedUser = localStorage.getItem('gelatoUserName');
             
             if (savedUser) {
@@ -356,16 +385,88 @@
                 document.getElementById('user-info').classList.add('hidden');
                 document.getElementById('no-user-info').classList.remove('hidden');
                 document.querySelector('main').classList.add('hidden');
-                alert('Devi effettuare il login per accedere al database ingredienti. Torna alla home page per fare il login.');
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1000);
+                await showAlertModal('Devi effettuare il login per accedere al database ingredienti. Torna alla home page per fare il login.');
+                window.location.href = 'index.html';
             }
         }
         
+        // Mostra modal per conferma
+        function showConfirmModal(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('confirm-modal');
+                const messageEl = document.getElementById('confirm-modal-message');
+                const confirmBtn = document.getElementById('confirm-modal-confirm');
+                const cancelBtn = document.getElementById('confirm-modal-cancel');
+                
+                messageEl.textContent = message;
+                modal.style.display = 'block';
+                
+                const handleConfirm = () => {
+                    modal.style.display = 'none';
+                    cleanup();
+                    resolve(true);
+                };
+                
+                const handleCancel = () => {
+                    modal.style.display = 'none';
+                    cleanup();
+                    resolve(false);
+                };
+                
+                const cleanup = () => {
+                    confirmBtn.removeEventListener('click', handleConfirm);
+                    cancelBtn.removeEventListener('click', handleCancel);
+                    modal.removeEventListener('click', handleOutsideClick);
+                };
+                
+                const handleOutsideClick = (e) => {
+                    if (e.target === modal) {
+                        handleCancel();
+                    }
+                };
+                
+                confirmBtn.addEventListener('click', handleConfirm);
+                cancelBtn.addEventListener('click', handleCancel);
+                modal.addEventListener('click', handleOutsideClick);
+            });
+        }
+
+        // Mostra modal per alert
+        function showAlertModal(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('alert-modal');
+                const messageEl = document.getElementById('alert-modal-message');
+                const okBtn = document.getElementById('alert-modal-ok');
+                
+                messageEl.textContent = message;
+                modal.style.display = 'block';
+                
+                const handleOk = () => {
+                    modal.style.display = 'none';
+                    cleanup();
+                    resolve();
+                };
+                
+                const cleanup = () => {
+                    okBtn.removeEventListener('click', handleOk);
+                    modal.removeEventListener('click', handleOutsideClick);
+                };
+                
+                const handleOutsideClick = (e) => {
+                    if (e.target === modal) {
+                        handleOk();
+                    }
+                };
+                
+                okBtn.addEventListener('click', handleOk);
+                modal.addEventListener('click', handleOutsideClick);
+            });
+        }
+        
         // Gestisce il logout
-        function handleLogout() {
-            if (confirm('Vuoi effettuare il logout?')) {
+        async function handleLogout() {
+            const confirmed = await showConfirmModal('Vuoi effettuare il logout?');
+            if (confirmed) {
                 localStorage.removeItem('gelatoUserName');
                 window.location.href = 'index.html';
             }
